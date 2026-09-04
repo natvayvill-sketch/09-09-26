@@ -1,0 +1,43 @@
+---
+import '../styles/global.css';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+
+const { title } = Astro.props;
+---
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title} · Portfolio</title>
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Skip to content</a>
+    <Nav />
+    <main id="main-content" class="page">
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>
+
+<style>
+  .page {
+    max-width: 60rem;
+    margin: 0 auto;
+    padding: var(--space-5) var(--space-4);
+  }
+  .skip-link {
+    position: absolute;
+    left: -9999px;
+    top: 0;
+    background: var(--color-accent-red);
+    color: #fff;
+    padding: var(--space-2) var(--space-3);
+    z-index: 10;
+  }
+  .skip-link:focus {
+    left: var(--space-2);
+    top: var(--space-2);
+  }
+</style>

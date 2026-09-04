@@ -1,0 +1,15 @@
+---
+const { rotate = 'var(--tilt-a)' } = Astro.props;
+---
+<div class="tape" style={`--rotate: ${rotate}`} aria-hidden="true"></div>
+
+<style>
+  .tape {
+    width: 4.5rem;
+    height: 1.5rem;
+    background: rgba(255, 255, 240, 0.55);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+    transform: rotate(var(--rotate));
+    margin: 0 auto;
+  }
+</style>

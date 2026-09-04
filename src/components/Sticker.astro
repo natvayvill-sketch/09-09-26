@@ -1,0 +1,11 @@
+---
+const { rotate = 'var(--tilt-b)' } = Astro.props;
+---
+<span class="sticker" style={`--rotate: ${rotate}`} aria-hidden="true"><slot /></span>
+
+<style>
+  .sticker {
+    display: inline-block;
+    transform: rotate(var(--rotate));
+  }
+</style>

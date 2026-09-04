@@ -1,0 +1,41 @@
+---
+const links = [
+  { href: '/', label: 'Home' },
+  { href: '/work/', label: 'Work' },
+  { href: '/contact/', label: 'Contact' },
+];
+const current = Astro.url.pathname;
+---
+<nav class="nav" aria-label="Primary">
+  <ul>
+    {links.map((link) => (
+      <li>
+        <a href={link.href} aria-current={current === link.href ? 'page' : undefined}>
+          {link.label}
+        </a>
+      </li>
+    ))}
+  </ul>
+</nav>
+
+<style>
+  .nav ul {
+    display: flex;
+    gap: var(--space-4);
+    list-style: none;
+    padding: var(--space-3) var(--space-4);
+    margin: 0;
+    background: var(--color-paper-dark);
+    border-bottom: 2px solid var(--color-ink-soft);
+  }
+  .nav a {
+    font-family: var(--font-heading);
+    font-size: 1.25rem;
+    text-decoration: none;
+    color: var(--color-ink);
+  }
+  .nav a[aria-current="page"] {
+    color: var(--color-accent-red);
+    text-decoration: underline;
+  }
+</style>
