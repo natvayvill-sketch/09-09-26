@@ -1,0 +1,24 @@
+---
+const { era } = Astro.props;
+---
+<section class="chapter" data-era-section={era}>
+  <h2>{era}</h2>
+  <div class="chapter-divider" aria-hidden="true"></div>
+  <div class="chapter-cards">
+    <slot />
+  </div>
+</section>
+
+<style>
+  .chapter-divider {
+    border-top: 2px dashed var(--color-ink-soft);
+    margin: var(--space-2) 0 var(--space-4);
+  }
+  .chapter {
+    margin-bottom: var(--space-6);
+  }
+  .chapter-cards {
+    display: flex;
+    flex-wrap: wrap;
+  }
+</style>

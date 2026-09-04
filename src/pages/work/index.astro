@@ -1,0 +1,128 @@
+---
+import PageLayout from '../../layouts/PageLayout.astro';
+import Chapter from '../../components/Chapter.astro';
+import ProjectCard from '../../components/ProjectCard.astro';
+import { getCollection } from 'astro:content';
+import { visibleProjects } from '../../lib/projects.js';
+
+const allProjects = await getCollection('projects');
+const projects = visibleProjects(allProjects);
+
+const eras = [...new Set(projects.map((project) => project.data.era))];
+const tags = [...new Set(projects.flatMap((project) => project.data.tags))].sort();
+---
+<PageLayout title="Work">
+  <h1>The Scrapbook</h1>
+
+  <div class="filters" role="group" aria-label="Filter projects">
+    <div class="filter-group">
+      <button type="button" class="era-filter is-active" data-era="all">All eras</button>
+      {eras.map((era) => (
+        <button type="button" class="era-filter" data-era={era}>{era}</button>
+      ))}
+    </div>
+    <div class="filter-group">
+      {tags.map((tag) => (
+        <button type="button" class="tag-filter" data-tag={tag}>{tag}</button>
+      ))}
+    </div>
+  </div>
+
+  <p class="empty-state" hidden>No pages match those filters yet.</p>
+
+  {eras.map((era) => (
+    <Chapter era={era}>
+      {projects
+        .filter((project) => project.data.era === era)
+        .map((project) => <ProjectCard project={project} />)}
+    </Chapter>
+  ))}
+</PageLayout>
+
+<script>
+  import { matchesFilter } from '../../lib/projects.js';
+
+  const eraButtons = document.querySelectorAll('.era-filter');
+  const tagButtons = document.querySelectorAll('.tag-filter');
+  const chapters = document.querySelectorAll('.chapter');
+  const emptyState = document.querySelector('.empty-state');
+
+  let activeEra = 'all';
+  const activeTags = new Set();
+
+  function applyFilters() {
+    let visibleCount = 0;
+
+    chapters.forEach((chapter) => {
+      const cards = chapter.querySelectorAll('.project-card');
+      let chapterVisibleCount = 0;
+
+      cards.forEach((card) => {
+        const project = {
+          data: {
+            era: card.dataset.era,
+            tags: card.dataset.tags ? card.dataset.tags.split(',') : [],
+          },
+        };
+        const matches = matchesFilter(project, {
+          era: activeEra,
+          tags: [...activeTags],
+        });
+        card.hidden = !matches;
+        if (matches) chapterVisibleCount += 1;
+      });
+
+      chapter.hidden = chapterVisibleCount === 0;
+      visibleCount += chapterVisibleCount;
+    });
+
+    emptyState.hidden = visibleCount > 0;
+  }
+
+  eraButtons.forEach((button) => {
+    button.addEventListener('click', () => {
+      activeEra = button.dataset.era;
+      eraButtons.forEach((b) => b.classList.toggle('is-active', b === button));
+      applyFilters();
+    });
+  });
+
+  tagButtons.forEach((button) => {
+    button.addEventListener('click', () => {
+      const tag = button.dataset.tag;
+      if (activeTags.has(tag)) {
+        activeTags.delete(tag);
+        button.classList.remove('is-active');
+      } else {
+        activeTags.add(tag);
+        button.classList.add('is-active');
+      }
+      applyFilters();
+    });
+  });
+</script>
+
+<style>
+  .filters {
+    margin-bottom: var(--space-4);
+  }
+  .filter-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-bottom: var(--space-2);
+  }
+  .filter-group button {
+    font-family: var(--font-body);
+    background: var(--color-paper-dark);
+    border: 1px solid var(--color-ink-soft);
+    border-radius: 999px;
+    padding: var(--space-1) var(--space-3);
+    cursor: pointer;
+  }
+  .filter-group button.is-active {
+    background: var(--color-accent-teal);
+    color: var(--color-paper);
+    border-color: var(--color-accent-teal);
+  }
+</style>
