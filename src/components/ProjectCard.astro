@@ -1,0 +1,25 @@
+---
+import Polaroid from './Polaroid.astro';
+
+const { project } = Astro.props;
+const { title, era, tags, cover } = project.data;
+const href = `/work/${project.id}/`;
+---
+<a class="project-card" href={href} data-era={era} data-tags={tags.join(',')}>
+  <Polaroid src={cover} alt={title} caption={title} />
+  <p class="meta">{era} · {tags.join(', ')}</p>
+</a>
+
+<style>
+  .project-card {
+    display: inline-block;
+    text-decoration: none;
+    color: inherit;
+    margin: var(--space-3);
+  }
+  .project-card .meta {
+    font-size: 0.85rem;
+    color: var(--color-ink-soft);
+    text-align: center;
+  }
+</style>

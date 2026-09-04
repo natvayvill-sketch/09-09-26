@@ -1,0 +1,25 @@
+---
+const { src, alt, caption, rotate = 'var(--tilt-c)' } = Astro.props;
+---
+<figure class="polaroid" style={`--rotate: ${rotate}`}>
+  <img src={src} alt={alt} />
+  {caption && <figcaption>{caption}</figcaption>}
+</figure>
+
+<style>
+  .polaroid {
+    background: #fff;
+    padding: var(--space-2) var(--space-2) var(--space-4);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+    transform: rotate(var(--rotate));
+    margin: 0;
+    width: fit-content;
+  }
+  .polaroid figcaption {
+    font-family: var(--font-heading);
+    font-size: 1.1rem;
+    text-align: center;
+    margin-top: var(--space-2);
+    color: var(--color-ink);
+  }
+</style>
