@@ -1,0 +1,56 @@
+---
+import { getCollection, render } from 'astro:content';
+import PageLayout from '../../layouts/PageLayout.astro';
+import Polaroid from '../../components/Polaroid.astro';
+import { visibleProjects } from '../../lib/projects.js';
+
+export async function getStaticPaths() {
+  const allProjects = await getCollection('projects');
+  const projects = visibleProjects(allProjects);
+  return projects.map((project) => ({
+    params: { slug: project.id },
+    props: { project },
+  }));
+}
+
+const { project } = Astro.props;
+const { title, era, tags, gallery, tools, links } = project.data;
+const { Content } = await render(project);
+---
+<PageLayout title={title}>
+  <p><a href="/work/">← Back to scrapbook</a></p>
+  <h1>{title}</h1>
+  <p class="meta">{era} · {tags.join(', ')}</p>
+
+  <div class="gallery-grid">
+    {gallery.map((src) => <Polaroid src={src} alt={title} />)}
+  </div>
+
+  <div class="writeup">
+    <Content />
+  </div>
+
+  {tools.length > 0 && (
+    <p><strong>Tools:</strong> {tools.join(', ')}</p>
+  )}
+
+  {links.length > 0 && (
+    <ul class="links">
+      {links.map((link) => (
+        <li><a href={link.url}>{link.label}</a></li>
+      ))}
+    </ul>
+  )}
+</PageLayout>
+
+<style>
+  .gallery-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    margin: var(--space-4) 0;
+  }
+  .writeup {
+    max-width: 42rem;
+  }
+</style>
