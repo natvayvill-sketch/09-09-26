@@ -1,0 +1,31 @@
+@import './tokens.css';
+@import '@fontsource/caveat/700.css';
+@import '@fontsource/libre-baskerville/400.css';
+@import '@fontsource/libre-baskerville/700.css';
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background-color: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  line-height: 1.6;
+}
+
+h1, h2, h3 {
+  font-family: var(--font-heading);
+  color: var(--color-stain);
+  margin: 0 0 var(--space-3);
+}
+
+a {
+  color: var(--color-accent-teal);
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}

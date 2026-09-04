@@ -1,0 +1,36 @@
+:root {
+  /* Paper & ink */
+  --color-paper: #f3ead9;
+  --color-paper-dark: #e6d9bf;
+  --color-ink: #3a2f28;
+  --color-ink-soft: #6b5c4d;
+  --color-stain: #8a5a34;
+  --color-accent-red: #a8362b;
+  --color-accent-teal: #2f6f6a;
+
+  /* Type */
+  --font-heading: 'Caveat', cursive;
+  --font-body: 'Libre Baskerville', serif;
+
+  /* Spacing scale */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 1rem;
+  --space-4: 1.5rem;
+  --space-5: 2.5rem;
+  --space-6: 4rem;
+
+  /* Scrapbook tilt angles — pick from these instead of inventing new ones */
+  --tilt-a: -3deg;
+  --tilt-b: -1deg;
+  --tilt-c: 2deg;
+  --tilt-d: 4deg;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
