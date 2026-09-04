@@ -43,3 +43,20 @@ it's ready.
       scores.
 - [ ] Turn on "reduce motion" in your OS accessibility settings and
       confirm hover/focus effects still work but don't animate.
+
+## Deploying
+
+1. Push this repo to GitHub (create an empty repo on GitHub first,
+   then `git remote add origin <url>` and `git push -u origin main`).
+2. In Netlify, click "Add new site" → "Import an existing project" →
+   choose this GitHub repo.
+3. Netlify reads `netlify.toml` automatically (build command
+   `npm run build`, publish directory `dist`) — accept the defaults
+   it shows you.
+4. Click deploy. Your site goes live at a generated
+   `<random-name>.netlify.app` address (you can rename this, or
+   attach a custom domain later, from the Netlify site settings — no
+   code changes needed).
+5. The contact form only starts working once the site is deployed
+   this way — that's expected (see the contact form note earlier in
+   this README's history).
