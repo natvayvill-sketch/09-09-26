@@ -16,14 +16,14 @@ const tags = [...new Set(projects.flatMap((project) => project.data.tags))].sort
 
   <div class="filters" role="group" aria-label="Filter projects">
     <div class="filter-group">
-      <button type="button" class="era-filter is-active" data-era="all">All eras</button>
+      <button type="button" class="era-filter is-active" data-era="all" aria-pressed="true">All eras</button>
       {eras.map((era) => (
-        <button type="button" class="era-filter" data-era={era}>{era}</button>
+        <button type="button" class="era-filter" data-era={era} aria-pressed="false">{era}</button>
       ))}
     </div>
     <div class="filter-group">
       {tags.map((tag) => (
-        <button type="button" class="tag-filter" data-tag={tag}>{tag}</button>
+        <button type="button" class="tag-filter" data-tag={tag} aria-pressed="false">{tag}</button>
       ))}
     </div>
   </div>
@@ -82,7 +82,11 @@ const tags = [...new Set(projects.flatMap((project) => project.data.tags))].sort
   eraButtons.forEach((button) => {
     button.addEventListener('click', () => {
       activeEra = button.dataset.era;
-      eraButtons.forEach((b) => b.classList.toggle('is-active', b === button));
+      eraButtons.forEach((b) => {
+        const isActive = b === button;
+        b.classList.toggle('is-active', isActive);
+        b.setAttribute('aria-pressed', String(isActive));
+      });
       applyFilters();
     });
   });
@@ -93,9 +97,11 @@ const tags = [...new Set(projects.flatMap((project) => project.data.tags))].sort
       if (activeTags.has(tag)) {
         activeTags.delete(tag);
         button.classList.remove('is-active');
+        button.setAttribute('aria-pressed', 'false');
       } else {
         activeTags.add(tag);
         button.classList.add('is-active');
+        button.setAttribute('aria-pressed', 'true');
       }
       applyFilters();
     });

@@ -9,7 +9,7 @@ npm install
 npm run dev
 ```
 
-Then open http://localhost:4321/.
+Then open http://localhost:4321/. Run `npm test` to run the test suite.
 
 ## Adding a new project
 
@@ -21,8 +21,10 @@ Then open http://localhost:4321/.
    `cover`/`gallery` at them with paths starting `/images/...`.
 4. Write the body of the file — that becomes the project's full
    write-up.
-5. Run `npm run build` to make sure it's valid, then commit and push.
-   Netlify redeploys automatically.
+5. Run `npm run build` to check your frontmatter is valid (it won't
+   catch a typo'd image path — open the page in your browser to
+   confirm images actually load), then commit and push. Netlify
+   redeploys automatically.
 
 Set `draft: true` to keep a project out of the site entirely until
 it's ready.
@@ -44,6 +46,29 @@ it's ready.
 - [ ] Turn on "reduce motion" in your OS accessibility settings and
       confirm hover/focus effects still work but don't animate.
 
+## Known v1 limitations
+
+`PageLayout` currently uses a flat paper background color rather than
+the textured/vignette background originally envisioned, and the
+`Sticker`/`TapeStrip` decorative components exist in
+`src/components/` but aren't imported or used anywhere on the site
+yet. Both are reasonable candidates for a follow-up pass.
+
+## Before your first deploy
+
+The placeholder content below ships by default — replace it before
+you point a real domain at this site:
+
+- [ ] `src/pages/index.astro` — replace `Hi, I'm [Your Name] —
+      welcome to my scrapbook.` with your actual name/intro.
+- [ ] `src/pages/contact.astro` — replace the `mailto:you@example.com`
+      link with your real email address.
+- [ ] The three sample projects in `src/content/projects/`
+      (`celestial-drift.md`, `paper-cutout-game.md`,
+      `first-light-render.md`) each have a placeholder body starting
+      "Replace this with the real write-up" — write real content,
+      remove the sample projects, or set `draft: true` on them.
+
 ## Deploying
 
 1. Push this repo to GitHub (create an empty repo on GitHub first,
@@ -58,5 +83,4 @@ it's ready.
    attach a custom domain later, from the Netlify site settings — no
    code changes needed).
 5. The contact form only starts working once the site is deployed
-   this way — that's expected (see the contact form note earlier in
-   this README's history).
+   this way — that's expected.
