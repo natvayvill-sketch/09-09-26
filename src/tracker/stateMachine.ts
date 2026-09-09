@@ -33,7 +33,7 @@ export function reduce(state: TrackerState, event: TrackerEvent): Result {
       };
 
     case "START":
-      if (["intro", "denied", "error", "paused", "stopped"].includes(state.name)) {
+      if (["intro", "denied", "error", "paused", "stopped", "unsupported"].includes(state.name)) {
         return request(state);
       }
       return noop;

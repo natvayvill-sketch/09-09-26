@@ -89,6 +89,12 @@ describe("stateMachine.reduce", () => {
     expect(r.state.suppressStruggling).toBe(false);
   });
 
+  it("unsupported (weak-device) + START -> requesting (weak devices can still try)", () => {
+    const r = reduce(at("unsupported", { unsupportedReason: "weak-device" }), { type: "START" });
+    expect(r.state.name).toBe("requesting");
+    expect(r.effects).toContain("request-camera");
+  });
+
   it("intro + UNSUPPORTED -> unsupported with the reason", () => {
     const r = reduce(INITIAL_STATE, { type: "UNSUPPORTED", reason: "no-webgl2" });
     expect(r.state.name).toBe("unsupported");
