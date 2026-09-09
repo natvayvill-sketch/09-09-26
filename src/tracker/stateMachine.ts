@@ -84,7 +84,12 @@ export function reduce(state: TrackerState, event: TrackerEvent): Result {
       return noop;
 
     case "HIDDEN":
-      if (state.name === "running" || state.name === "struggling") {
+      if (
+        state.name === "running" ||
+        state.name === "struggling" ||
+        state.name === "requesting" ||
+        state.name === "loading"
+      ) {
         return pause();
       }
       return noop;

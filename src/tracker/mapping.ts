@@ -86,6 +86,9 @@ export function mapFaceToPose(
   if (!faded) {
     targets.blinkLeft = clamp01(bs.eyeBlinkLeft ?? 0);
     targets.blinkRight = clamp01(bs.eyeBlinkRight ?? 0);
+    // Minimal rigs (including the shipped placeholder) only expose a combined
+    // `blink` preset; per-eye keys are kept for models that do have them.
+    targets.blink = Math.max(targets.blinkLeft, targets.blinkRight);
 
     const jaw = clamp01((bs.jawOpen ?? 0) * config.gain.jawOpen);
     const pucker = clamp01(bs.mouthPucker ?? 0);

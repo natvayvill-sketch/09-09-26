@@ -280,3 +280,16 @@ file to replace.
 - Swapping `avatar.vrm` for another valid VRM requires no code change.
 - Eye-gaze and body-lean are not implemented, but `mapping.ts` has the
   clearly-marked extension points for them.
+- Known limitation: the shipped placeholder avatar's rig lacks `joy` and
+  `surprised` presets, so smile and eyebrow-raise are inert on it — they
+  activate when the owner swaps in a VRoid-exported VRM (the intended
+  path). Head movement, blink, and mouth shapes all work on the
+  placeholder.
+
+## Implementation notes
+
+Deviations from this design worth recording:
+
+- `paused` (tab-hidden) does NOT auto-resume; the visitor clicks "Start
+  again". Silently re-arming a camera on tab-focus is worse than an
+  explicit click.

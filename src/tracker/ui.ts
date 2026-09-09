@@ -42,6 +42,14 @@ const COPY: Record<TrackerState["name"], { title: string; body: string; button?:
 };
 
 export function renderState(root: HTMLElement, state: TrackerState, handlers: Handlers): void {
+  // `root.innerHTML = ""` below destroys the focused control; if focus was
+  // inside this panel, hand it to the new screen's first button so a keyboard
+  // user isn't dumped back to <body> on every transition.
+  const hadFocus = root.contains(document.activeElement);
+  const restoreFocus = (): void => {
+    if (hadFocus) root.querySelector<HTMLButtonElement>(".lp-btn")?.focus();
+  };
+
   const c = COPY[state.name];
   root.innerHTML = "";
 
@@ -49,6 +57,7 @@ export function renderState(root: HTMLElement, state: TrackerState, handlers: Ha
     const stop = button("Stop", "lp-btn");
     stop.addEventListener("click", handlers.onStop);
     root.appendChild(stop);
+    restoreFocus();
     return;
   }
 
@@ -90,7 +99,14 @@ export function renderState(root: HTMLElement, state: TrackerState, handlers: Ha
     panel.appendChild(b);
   }
 
+  if (state.name === "struggling") {
+    const stop = button("Stop", "lp-btn lp-btn-secondary");
+    stop.addEventListener("click", handlers.onStop);
+    panel.appendChild(stop);
+  }
+
   root.appendChild(panel);
+  restoreFocus();
 }
 
 function button(label: string, className: string): HTMLButtonElement {

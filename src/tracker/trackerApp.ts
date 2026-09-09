@@ -25,8 +25,13 @@ export function start(opts: StartOpts): void {
   let rafId = 0;
   let lastTs = 0;
   let fpsEma = 60;
+  let lastRaw: import("./types").RawFaceInput | null = null;
+  let lastDetectTs = 0;
 
   const tier = pickTier(readDeviceSignals());
+  // Detection runs at the tier's target rate, not the display rate; the
+  // mapping smoothing interpolates the avatar between tracking updates.
+  const detectIntervalMs = tier === "strong" ? 1000 / 30 : 1000 / 20;
   const watchdog = new FrameRateWatchdog(
     { fpsFloor: 12, sustainedMs: 5000 },
     () => dispatch({ type: "FPS_LOW" }),
@@ -51,6 +56,11 @@ export function start(opts: StartOpts): void {
     switch (effect) {
       case "request-camera": {
         const result = await requestCamera();
+        if (state.name !== "requesting") {
+          // tab was hidden / stopped while the permission prompt was open
+          if (result.ok) stopCamera(result.stream);
+          return;
+        }
         if (result.ok) {
           stream = result.stream;
           opts.video.srcObject = stream;
@@ -65,11 +75,20 @@ export function start(opts: StartOpts): void {
         try {
           if (!faceTracker) {
             const { createFaceTracker } = await import("./faceTracker");
-            faceTracker = await createFaceTracker({
-              wasmBase: opts.wasmBase,
-              modelUrl: opts.modelUrl,
-              delegate: "GPU",
-            });
+            try {
+              faceTracker = await createFaceTracker({
+                wasmBase: opts.wasmBase,
+                modelUrl: opts.modelUrl,
+                delegate: "GPU",
+              });
+            } catch (gpuErr) {
+              console.warn("[living-portrait] GPU delegate failed, retrying on CPU", gpuErr);
+              faceTracker = await createFaceTracker({
+                wasmBase: opts.wasmBase,
+                modelUrl: opts.modelUrl,
+                delegate: "CPU",
+              });
+            }
           }
           if (!scene) {
             const { createVrmScene } = await import("./vrmScene");
@@ -82,6 +101,12 @@ export function start(opts: StartOpts): void {
           dispatch({ type: "LOAD_OK" });
         } catch (err) {
           console.error("[living-portrait] load failed", err);
+          // a scene that failed mid-load must not be reused: a retry would
+          // skip the `if (!scene)` block and render an avatar-less scene.
+          if (scene) {
+            scene.dispose();
+            scene = null;
+          }
           dispatch({ type: "LOAD_FAILED" });
         }
         return;
@@ -89,6 +114,9 @@ export function start(opts: StartOpts): void {
       case "start-loop": {
         watchdog.reset();
         mapState = createMappingState();
+        lastRaw = null;
+        lastDetectTs = 0;
+        fpsEma = 60;
         lastTs = performance.now();
         const loop = (now: number): void => {
           rafId = requestAnimationFrame(loop);
@@ -98,10 +126,15 @@ export function start(opts: StartOpts): void {
           watchdog.sample(fpsEma, now);
 
           if (faceTracker && scene && opts.video.readyState >= 2) {
-            const raw = faceTracker.detect(opts.video, now);
-            const mapped = mapFaceToPose(raw, mapState, DEFAULT_MAPPING_CONFIG);
-            mapState = mapped.state;
-            scene.applyPose(mapped.pose);
+            if (now - lastDetectTs >= detectIntervalMs) {
+              lastRaw = faceTracker.detect(opts.video, now);
+              lastDetectTs = now;
+            }
+            if (lastRaw) {
+              const mapped = mapFaceToPose(lastRaw, mapState, DEFAULT_MAPPING_CONFIG);
+              mapState = mapped.state;
+              scene.applyPose(mapped.pose);
+            }
           }
           scene?.render(dt);
         };
@@ -132,6 +165,10 @@ export function start(opts: StartOpts): void {
     draw();
   }
 
+  // No teardown: this site is a plain multi-page app, so navigating away is a
+  // full document unload that drops these listeners and the whole tracker.
+  // If a client-side router (Astro ClientRouter / View Transitions) is ever
+  // added, start() will need to return a cleanup function.
   document.addEventListener("visibilitychange", () => {
     if (document.visibilityState === "hidden") dispatch({ type: "HIDDEN" });
   });

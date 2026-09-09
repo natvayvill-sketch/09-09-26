@@ -59,7 +59,13 @@ export function readDeviceSignals(): DeviceSignals {
 export function hasWebGL2(): boolean {
   try {
     const canvas = document.createElement("canvas");
-    return canvas.getContext("webgl2") !== null;
+    const gl = canvas.getContext("webgl2");
+    if (gl) {
+      // release the probe context immediately; browsers cap live WebGL contexts
+      gl.getExtension("WEBGL_lose_context")?.loseContext();
+      return true;
+    }
+    return false;
   } catch {
     return false;
   }

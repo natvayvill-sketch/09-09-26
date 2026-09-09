@@ -35,8 +35,8 @@ export function createVrmScene(): VrmScene {
     if (!renderer) return;
     const ratio = currentTier === "strong" ? Math.min(window.devicePixelRatio, 2) : 1;
     renderer.setPixelRatio(ratio);
-    renderer.shadowMap.enabled = currentTier === "strong";
-    dir.castShadow = currentTier === "strong";
+    // No shadows: nothing in the scene casts or receives them, so enabling
+    // shadowMap would only buy an empty shadow pass every frame.
     dir.intensity = currentTier === "strong" ? 1.1 : 0.9;
   }
 
@@ -65,6 +65,21 @@ export function createVrmScene(): VrmScene {
       if (vrm) scene.remove(vrm.scene);
       vrm = loaded;
       scene.add(vrm.scene);
+
+      // Surface missing expression presets: a rig without them silently
+      // no-ops those cues (setValue ignores unknown names).
+      const MAPPED_EXPRESSIONS = [
+        "blink", "blinkLeft", "blinkRight",
+        "aa", "ih", "ou", "happy", "surprised",
+      ];
+      const em = vrm.expressionManager;
+      const missing = MAPPED_EXPRESSIONS.filter((n) => !em || !em.getExpression(n));
+      if (missing.length) {
+        console.info(
+          `[living-portrait] avatar is missing expression presets: ${missing.join(", ")} — ` +
+            `those facial cues won't animate. A VRoid Studio export includes all of them.`,
+        );
+      }
     },
 
     applyPose(pose) {
@@ -74,7 +89,7 @@ export function createVrmScene(): VrmScene {
           try {
             em.setValue(name, weight);
           } catch {
-            /* model lacks this expression preset; skip */
+            /* defensive: setValue currently no-ops on unknown names, but guard anyway */
           }
         }
       }

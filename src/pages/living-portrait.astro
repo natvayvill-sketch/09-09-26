@@ -17,8 +17,8 @@ import TapeStrip from "../components/TapeStrip.astro";
   <div class="lp-frame">
     <TapeStrip rotate="var(--tilt-d)" />
     <div class="lp-stage">
-      <canvas id="lp-canvas" width="480" height="480" aria-label="Avatar view"></canvas>
-      <div id="lp-ui" class="lp-ui"></div>
+      <canvas id="lp-canvas" width="480" height="480" role="img" aria-label="Avatar view"></canvas>
+      <div id="lp-ui" class="lp-ui" aria-live="polite"></div>
     </div>
     <p class="lp-caption">say cheese</p>
   </div>
@@ -96,6 +96,12 @@ import TapeStrip from "../components/TapeStrip.astro";
     padding: var(--space-2) var(--space-4);
     margin-top: var(--space-2);
     cursor: pointer;
+  }
+  .lp-btn-secondary {
+    background: transparent;
+    color: var(--color-ink);
+    border: 1px solid var(--color-ink-soft);
+    margin-left: var(--space-2);
   }
   .lp-ui:has(.lp-btn:only-child) { align-items: flex-end; justify-content: flex-end; padding: var(--space-2); }
   .lp-caption {

@@ -34,6 +34,37 @@ describe("matrixToEuler", () => {
     const e = matrixToEuler(m);
     expect(Math.abs(e.y)).toBeCloseTo(Math.PI / 2, 4);
   });
+
+  it("decodes signed pitch (rotation about X) and roll (about Z)", () => {
+    // column-major +0.3 rad about X
+    const cx = Math.cos(0.3), sx = Math.sin(0.3);
+    const mx = [1, 0, 0, 0, 0, cx, sx, 0, 0, -sx, cx, 0, 0, 0, 0, 1];
+    const ex = matrixToEuler(mx);
+    expect(ex.x).toBeCloseTo(0.3, 3);
+
+    // column-major +0.2 rad about Z
+    const cz = Math.cos(0.2), sz = Math.sin(0.2);
+    const mz = [cz, sz, 0, 0, -sz, cz, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
+    const ez = matrixToEuler(mz);
+    expect(ez.z).toBeCloseTo(0.2, 3);
+  });
+
+  it("mirror negates yaw and roll of the head pose", () => {
+    const cfg = { ...DEFAULT_MAPPING_CONFIG };
+    const cy = Math.cos(0.3), sy = Math.sin(0.3);
+    const m = [cy, 0, -sy, 0, 0, 1, 0, 0, sy, 0, cy, 0, 0, 0, 0, 1];
+    const notMirrored = mapFaceToPose(
+      face({ headMatrix: m }), createMappingState(), { ...cfg, mirror: false },
+    );
+    const mirrored = mapFaceToPose(
+      face({ headMatrix: m }), createMappingState(), { ...cfg, mirror: true },
+    );
+    // opposite sign on y (yaw); same magnitude
+    expect(Math.sign(mirrored.pose.headEuler.y)).toBe(-Math.sign(notMirrored.pose.headEuler.y));
+    expect(Math.abs(mirrored.pose.headEuler.y)).toBeCloseTo(
+      Math.abs(notMirrored.pose.headEuler.y), 6,
+    );
+  });
 });
 
 describe("mapFaceToPose - blink", () => {
@@ -47,6 +78,8 @@ describe("mapFaceToPose - blink", () => {
     // blink uses blinkSmoothing (0.8), so after one frame it is already most of the way
     expect(r.pose.expressionWeights.blinkLeft).toBeGreaterThan(0.7);
     expect(r.pose.expressionWeights.blinkRight).toBeGreaterThan(0.7);
+    // combined key for minimal rigs that only expose `blink`
+    expect(r.pose.expressionWeights.blink).toBeGreaterThan(0.7);
   });
 });
 

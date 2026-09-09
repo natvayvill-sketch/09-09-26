@@ -98,6 +98,9 @@ place: `DEFAULT_MAPPING_CONFIG` in `src/tracker/mapping.ts`.
 - [ ] `/living-portrait/`: cover the camera / leave frame while running —
       the avatar eases to a neutral resting pose rather than freezing or
       glitching.
+- [ ] `/living-portrait/`: turn your head left — the avatar's head turns
+      to the *same* side of the screen (mirror, like a selfie), not the
+      opposite. Same for tilting.
 
 ## Known v1 limitations
 
@@ -106,6 +109,13 @@ the textured/vignette background originally envisioned. The `Sticker`
 decorative component exists in `src/components/` but isn't used
 anywhere yet (`TapeStrip` is now used on the Living Portrait page).
 Both are reasonable candidates for a follow-up pass.
+
+The shipped placeholder avatar ("Rose", a CC0 model) has a minimal
+expression rig — it supports mouth shapes, blink, and head movement, but
+not `joy` or `surprised`, so **smile and eyebrow-raise do nothing until
+you swap in a fuller VRM**. Any VRoid Studio export includes those
+presets; see "Swapping the avatar" above. This is a limitation of the
+sample model, not the tracker.
 
 ## Before your first deploy
 

@@ -78,6 +78,18 @@ describe("stateMachine.reduce", () => {
     expect(r.effects).toEqual(expect.arrayContaining(["stop-loop", "release-camera"]));
   });
 
+  it("requesting + HIDDEN -> paused, releases camera", () => {
+    const r = reduce(at("requesting"), { type: "HIDDEN" });
+    expect(r.state.name).toBe("paused");
+    expect(r.effects).toEqual(expect.arrayContaining(["stop-loop", "release-camera"]));
+  });
+
+  it("loading + HIDDEN -> paused, releases camera", () => {
+    const r = reduce(at("loading"), { type: "HIDDEN" });
+    expect(r.state.name).toBe("paused");
+    expect(r.effects).toEqual(expect.arrayContaining(["stop-loop", "release-camera"]));
+  });
+
   it("paused + START -> requesting", () => {
     const r = reduce(at("paused"), { type: "START" });
     expect(r.state.name).toBe("requesting");
