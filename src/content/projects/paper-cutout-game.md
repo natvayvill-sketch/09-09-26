@@ -1,16 +1,17 @@
 ---
-title: "Paper Cutout Game"
-era: "Paper Era"
+title: "Leah Faulkner"
+era: "Common Era"
 date: 2024-11-03
-tags: ["Code", "Game"]
-cover: "/images/projects/paper-cutout-game/cover.svg"
+tags: ["2D Art", "Concept Work"]
+cover: "/images/projects/paper-cutout-game/cover.png"
 gallery:
-  - "/images/projects/paper-cutout-game/cover.svg"
-tools: ["JavaScript"]
+  - "/images/projects/paper-cutout-game/cover.png"
+tools: ["Procreate"]
 links: []
 featured: true
 draft: false
 ---
 
-Replace this with the real write-up: what the piece is, how it was
-made, and what you learned making it.
+First born, first discarded. 
+
+One must wonder how things would have played out had she been the director instead of understudy.

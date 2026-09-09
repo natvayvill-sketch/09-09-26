@@ -1,16 +1,15 @@
 ---
-title: "Celestial Drift"
-era: "Nebula Era"
+title: "Xipetotl"
+era: "The Age of Gods"
 date: 2025-07-12
-tags: ["Blender", "Animation"]
-cover: "/images/projects/celestial-drift/cover.svg"
+tags: ["2D Art", "Animation"]
+cover: "/images/projects/celestial-drift/cover.png"
 gallery:
-  - "/images/projects/celestial-drift/cover.svg"
-tools: ["Blender", "After Effects"]
+  - "/images/projects/celestial-drift/cover.png"
+tools: ["Procreate", "Procreate Dreams"]
 links: []
 featured: true
 draft: false
 ---
 
-Replace this with the real write-up: what the piece is, how it was
-made, and what you learned making it.
+God of Death, God of Life, Master of Cycles and the Cursed Mother.
