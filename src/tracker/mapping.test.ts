@@ -49,6 +49,23 @@ describe("matrixToEuler", () => {
     expect(ez.z).toBeCloseTo(0.2, 3);
   });
 
+  it("inverts pitch so the avatar nods with the user, not against them", () => {
+    // column-major +0.3 rad about X — matrixToEuler decodes this as x ≈ +0.3
+    const cx = Math.cos(0.3), sx = Math.sin(0.3);
+    const mx = [1, 0, 0, 0, 0, cx, sx, 0, 0, -sx, cx, 0, 0, 0, 0, 1];
+    let state = createMappingState();
+    let headX = 0;
+    for (let i = 0; i < 60; i++) {
+      const r = mapFaceToPose(face({ headMatrix: mx }), state);
+      state = r.state;
+      headX = r.pose.headEuler.x;
+    }
+    // decoded pitch is positive; the mapped head-bone pitch must come out negative
+    expect(headX).toBeLessThan(0);
+    // magnitude is the non-neck share of the (unclamped, < clamp) 0.3 rad
+    expect(Math.abs(headX)).toBeCloseTo(0.3 * (1 - DEFAULT_MAPPING_CONFIG.neckShare), 2);
+  });
+
   it("mirror negates yaw and roll of the head pose", () => {
     const cfg = { ...DEFAULT_MAPPING_CONFIG };
     const cy = Math.cos(0.3), sy = Math.sin(0.3);

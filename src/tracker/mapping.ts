@@ -133,6 +133,10 @@ export function mapFaceToPose(
   let targetEuler: Euler3 = { x: 0, y: 0, z: 0 };
   if (!faded && raw.headMatrix) {
     targetEuler = clampEuler(matrixToEuler(raw.headMatrix), config.headClampRad);
+    // MediaPipe reports head pitch in the opposite sense to the avatar's
+    // head-bone frame, so a real nod-down would tip the avatar's chin up.
+    // Flip pitch back. (Yaw and roll line up once mirrored, below.)
+    targetEuler = { ...targetEuler, x: -targetEuler.x };
     if (config.mirror) {
       targetEuler = { x: targetEuler.x, y: -targetEuler.y, z: -targetEuler.z };
     }
