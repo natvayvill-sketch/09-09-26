@@ -12,9 +12,29 @@ const { src, alt, caption, rotate = 'var(--tilt-c)' } = Astro.props;
     padding: var(--space-2) var(--space-2) var(--space-4);
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
     transform: rotate(var(--rotate));
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
     margin: 0;
     width: fit-content;
     max-width: 100%;
+  }
+  /* Picked-up-off-the-table cue when this polaroid sits inside a project
+     card link. :global() is required here: Astro scopes .polaroid to this
+     file, so the ancestor part of the selector (.project-card, owned by
+     ProjectCard.astro) must opt out of scoping to match at all. */
+  :global(.project-card:focus-visible) .polaroid {
+    transform: rotate(0deg) translateY(-6px);
+    box-shadow: 0 10px 22px rgba(0, 0, 0, 0.32);
+  }
+  /* :hover is gated to devices that actually have a hovering pointer.
+     Without this, a tap on a touchscreen leaves the card "stuck" lifted
+     until something else is tapped — there's no hover-out gesture to
+     undo it. Keyboard focus above isn't touch-triggered, so it stays
+     unconditional. */
+  @media (hover: hover) {
+    :global(.project-card:hover) .polaroid {
+      transform: rotate(0deg) translateY(-6px);
+      box-shadow: 0 10px 22px rgba(0, 0, 0, 0.32);
+    }
   }
   .polaroid figcaption {
     font-family: var(--font-heading);
