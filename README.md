@@ -45,6 +45,12 @@ it's ready.
       scores.
 - [ ] Turn on "reduce motion" in your OS accessibility settings and
       confirm hover/focus effects still work but don't animate.
+- [ ] On any era page (e.g. `/work/the-age-of-gods/`), click every
+      table-of-contents button and confirm it jumps to the matching
+      character section further down the same page.
+- [ ] On `/work/`, click a project card and confirm it opens that
+      character's era page (not a 404, not a different character's
+      page).
 
 ## Known v1 limitations
 
