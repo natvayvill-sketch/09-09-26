@@ -15,8 +15,8 @@ Then open http://localhost:4321/. Run `npm test` to run the test suite.
 
 1. Add a Markdown file to `src/content/projects/`, e.g. `my-new-thing.md`.
 2. Fill in the frontmatter (see any existing file in that folder for
-   every field and what it means — `title`, `era`, `date`, `tags`,
-   `cover`, `gallery`, `tools`, `links`, `featured`, `draft`).
+   every field and what it means — `title`, `era`, `type`, `date`,
+   `tags`, `cover`, `gallery`, `tools`, `links`, `featured`, `draft`).
 3. Put its images in `public/images/projects/<slug>/` and point
    `cover`/`gallery` at them with paths starting `/images/...`.
 4. Write the body of the file — that becomes the project's full
