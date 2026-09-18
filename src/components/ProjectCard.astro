@@ -1,9 +1,10 @@
 ---
 import Polaroid from './Polaroid.astro';
+import { slugifyEra } from '../lib/projects.js';
 
 const { project } = Astro.props;
 const { title, era, tags, cover } = project.data;
-const href = `/work/${project.id}/`;
+const href = `/work/${slugifyEra(era)}/`;
 ---
 <a class="project-card" href={href} data-era={era} data-tags={tags.join(',')}>
   <Polaroid src={cover} alt={title} caption={title} />
