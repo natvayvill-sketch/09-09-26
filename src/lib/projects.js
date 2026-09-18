@@ -20,7 +20,6 @@ export function matchesFilter(project, { era, tags }) {
 export function slugifyEra(era) {
   return era
     .toLowerCase()
-    .trim()
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '');
 }

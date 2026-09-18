@@ -8,10 +8,21 @@ export async function getStaticPaths() {
   const allProjects = await getCollection('projects');
   const characters = visibleProjects(allProjects);
   const eras = groupByEra(characters);
-  return eras.map(({ era, characters: eraCharacters }) => ({
-    params: { era: slugifyEra(era) },
-    props: { era, characters: eraCharacters },
-  }));
+  const seenSlugs = new Map();
+  return eras.map(({ era, characters: eraCharacters }) => {
+    const slug = slugifyEra(era);
+    if (slug === '') {
+      throw new Error(`slugifyEra produced an empty slug for era "${era}". Give it a name with at least one letter or number.`);
+    }
+    if (seenSlugs.has(slug)) {
+      throw new Error(`Eras "${seenSlugs.get(slug)}" and "${era}" both slugify to "${slug}". Rename one so their URLs don't collide.`);
+    }
+    seenSlugs.set(slug, era);
+    return {
+      params: { era: slug },
+      props: { era, characters: eraCharacters },
+    };
+  });
 }
 
 const { era, characters } = Astro.props;
@@ -48,7 +59,7 @@ const contentById = new Map(rendered.map((r) => [r.id, r.Content]));
         const { title, tags, gallery, tools, links } = character.data;
         const Content = contentById.get(character.id);
         return (
-          <article id={character.id} class="character">
+          <article id={character.id} tabindex="-1" class="character">
             <h3>{title}</h3>
             <p class="meta">{era} · {tags.join(', ')}</p>
             <div class="gallery-grid">
@@ -88,6 +99,7 @@ const contentById = new Map(rendered.map((r) => [r.id, r.Content]));
     font-family: var(--font-heading);
     font-size: 1.2rem;
     margin: 0 0 var(--space-1);
+    text-transform: capitalize;
   }
   .toc ul {
     display: flex;
@@ -108,6 +120,9 @@ const contentById = new Map(rendered.map((r) => [r.id, r.Content]));
   }
   .type-section {
     margin-bottom: var(--space-6);
+  }
+  .type-section h2 {
+    text-transform: capitalize;
   }
   .character {
     margin-bottom: var(--space-5);

@@ -17,6 +17,10 @@ Then open http://localhost:4321/. Run `npm test` to run the test suite.
 2. Fill in the frontmatter (see any existing file in that folder for
    every field and what it means — `title`, `era`, `type`, `date`,
    `tags`, `cover`, `gallery`, `tools`, `links`, `featured`, `draft`).
+   `era` decides which page URL the character appears on (a typo
+   creates a stray page), and `type` decides which section of that
+   page it's grouped under (shown in both the table of contents and
+   as a heading).
 3. Put its images in `public/images/projects/<slug>/` and point
    `cover`/`gallery` at them with paths starting `/images/...`.
 4. Write the body of the file — that becomes the project's full
