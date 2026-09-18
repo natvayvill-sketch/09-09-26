@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { isVisible, sortByDateDesc, visibleProjects, matchesFilter } from './projects.js';
+import { isVisible, sortByDateDesc, visibleProjects, matchesFilter, slugifyEra, groupByEra, groupByType } from './projects.js';
 
 function project(overrides = {}) {
   return {
@@ -58,5 +58,41 @@ describe('matchesFilter', () => {
     const p = project({ tags: ['Blender', 'Animation'] });
     expect(matchesFilter(p, { era: 'all', tags: ['Blender', 'Animation'] })).toBe(true);
     expect(matchesFilter(p, { era: 'all', tags: ['Blender', 'Code'] })).toBe(false);
+  });
+});
+
+describe('slugifyEra', () => {
+  it('lowercases and hyphenates spaces', () => {
+    expect(slugifyEra('The Age of Gods')).toBe('the-age-of-gods');
+  });
+
+  it('strips punctuation', () => {
+    expect(slugifyEra("Gods' Age!")).toBe('gods-age');
+  });
+});
+
+describe('groupByEra', () => {
+  it('groups characters by era, preserving first-appearance order of eras', () => {
+    const a = project({ era: 'Common Era' });
+    const b = project({ era: 'The Age of Gods' });
+    const c = project({ era: 'Common Era' });
+    const result = groupByEra([a, b, c]);
+    expect(result).toEqual([
+      { era: 'Common Era', characters: [a, c] },
+      { era: 'The Age of Gods', characters: [b] },
+    ]);
+  });
+});
+
+describe('groupByType', () => {
+  it('groups characters by type, preserving first-appearance order of types and character order within a type', () => {
+    const xipetotl = project({ type: 'god' });
+    const leah = project({ type: 'Faulkner' });
+    const anotherGod = project({ type: 'god' });
+    const result = groupByType([xipetotl, leah, anotherGod]);
+    expect(result).toEqual([
+      { type: 'god', characters: [xipetotl, anotherGod] },
+      { type: 'Faulkner', characters: [leah] },
+    ]);
   });
 });

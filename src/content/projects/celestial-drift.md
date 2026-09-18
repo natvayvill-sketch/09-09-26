@@ -1,6 +1,7 @@
 ---
 title: "Xipetotl"
 era: "The Age of Gods"
+type: "god"
 date: 2025-07-12
 tags: ["2D Art", "Animation"]
 cover: "/images/projects/celestial-drift/cover.png"

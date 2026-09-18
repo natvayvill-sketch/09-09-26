@@ -1,6 +1,7 @@
 ---
 title: "First Light"
 era: "Nebula Era"
+type: "unsorted"
 date: 2024-02-20
 tags: ["Blender"]
 cover: "/images/projects/first-light-render/cover.svg"

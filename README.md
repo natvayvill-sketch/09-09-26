@@ -15,8 +15,12 @@ Then open http://localhost:4321/. Run `npm test` to run the test suite.
 
 1. Add a Markdown file to `src/content/projects/`, e.g. `my-new-thing.md`.
 2. Fill in the frontmatter (see any existing file in that folder for
-   every field and what it means — `title`, `era`, `date`, `tags`,
-   `cover`, `gallery`, `tools`, `links`, `featured`, `draft`).
+   every field and what it means — `title`, `era`, `type`, `date`,
+   `tags`, `cover`, `gallery`, `tools`, `links`, `featured`, `draft`).
+   `era` decides which page URL the character appears on (a typo
+   creates a stray page), and `type` decides which section of that
+   page it's grouped under (shown in both the table of contents and
+   as a heading).
 3. Put its images in `public/images/projects/<slug>/` and point
    `cover`/`gallery` at them with paths starting `/images/...`.
 4. Write the body of the file — that becomes the project's full
@@ -45,6 +49,12 @@ it's ready.
       scores.
 - [ ] Turn on "reduce motion" in your OS accessibility settings and
       confirm hover/focus effects still work but don't animate.
+- [ ] On any era page (e.g. `/work/the-age-of-gods/`), click every
+      table-of-contents button and confirm it jumps to the matching
+      character section further down the same page.
+- [ ] On `/work/`, click a project card and confirm it opens that
+      character's era page (not a 404, not a different character's
+      page).
 
 ## Known v1 limitations
 
