@@ -1,8 +1,10 @@
 ---
-import { getCollection, render } from 'astro:content';
+import { getCollection } from 'astro:content';
 import PageLayout from '../../layouts/PageLayout.astro';
 import Polaroid from '../../components/Polaroid.astro';
 import { visibleProjects, groupByEra, groupByType, slugifyEra } from '../../lib/projects.js';
+
+const tilts = ['var(--tilt-a)', 'var(--tilt-b)', 'var(--tilt-c)', 'var(--tilt-d)'];
 
 export async function getStaticPaths() {
   const allProjects = await getCollection('projects');
@@ -27,13 +29,6 @@ export async function getStaticPaths() {
 
 const { era, characters } = Astro.props;
 const typeGroups = groupByType(characters);
-const rendered = await Promise.all(
-  characters.map(async (character) => ({
-    id: character.id,
-    Content: (await render(character)).Content,
-  })),
-);
-const contentById = new Map(rendered.map((r) => [r.id, r.Content]));
 ---
 <PageLayout title={era}>
   <p><a href="/work/">← Back to scrapbook</a></p>
@@ -56,17 +51,23 @@ const contentById = new Map(rendered.map((r) => [r.id, r.Content]));
     <section class="type-section">
       <h2>{type}</h2>
       {typeCharacters.map((character) => {
-        const { title, tags, gallery, tools, links } = character.data;
-        const Content = contentById.get(character.id);
+        const { title, tags, panels, tools, links } = character.data;
         return (
           <article id={character.id} tabindex="-1" class="character">
             <h3>{title}</h3>
             <p class="meta">{era} · {tags.join(', ')}</p>
-            <div class="gallery-grid">
-              {gallery.map((src) => <Polaroid src={src} alt={title} />)}
-            </div>
-            <div class="writeup">
-              <Content />
+            <div class="panel-stack">
+              {panels.map((panel, index) => (
+                <div class="panel">
+                  {index === 0 && <p class="panel-chapter-title">{era}</p>}
+                  <Polaroid
+                    src={panel.image}
+                    alt={title}
+                    rotate={tilts[index % tilts.length]}
+                  />
+                  <p class="panel-caption">{panel.caption}</p>
+                </div>
+              ))}
             </div>
             {tools.length > 0 && (
               <p><strong>Tools:</strong> {tools.join(', ')}</p>
@@ -127,13 +128,28 @@ const contentById = new Map(rendered.map((r) => [r.id, r.Content]));
   .character {
     margin-bottom: var(--space-5);
   }
-  .gallery-grid {
+  .panel-stack {
     display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-3);
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-5);
     margin: var(--space-4) 0;
   }
-  .writeup {
-    max-width: 42rem;
+  .panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 32rem;
+  }
+  .panel-chapter-title {
+    font-family: var(--font-chapter-title);
+    font-size: 1.5rem;
+    color: var(--color-stain);
+    margin: 0 0 var(--space-2);
+  }
+  .panel-caption {
+    font-family: var(--font-body);
+    margin: var(--space-2) 0 0;
+    text-align: center;
   }
 </style>

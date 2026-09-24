@@ -10,7 +10,14 @@ const projects = defineCollection({
     date: z.coerce.date(),
     tags: z.array(z.string()).default([]),
     cover: z.string(),
-    gallery: z.array(z.string()).default([]),
+    panels: z
+      .array(
+        z.object({
+          image: z.string(),
+          caption: z.string(),
+        }),
+      )
+      .min(1),
     tools: z.array(z.string()).default([]),
     links: z
       .array(z.object({ label: z.string(), url: z.string().url() }))
