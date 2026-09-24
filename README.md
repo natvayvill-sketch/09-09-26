@@ -33,6 +33,43 @@ Then open http://localhost:4321/. Run `npm test` to run the test suite.
 Set `draft: true` to keep a project out of the site entirely until
 it's ready.
 
+## The Living Portrait page
+
+`/living-portrait` is a webcam-driven 3D avatar demo. All of its code is
+in `src/tracker/` (plain TypeScript) and loads lazily — nothing heavy is
+downloaded until a visitor clicks "Start camera", and the 3D/tracking
+libraries (`three`, `@pixiv/three-vrm`, `@mediapipe/tasks-vision`) only
+load after they grant camera permission. Nothing derived from the camera
+ever leaves the browser.
+
+Self-hosted assets live in `public/tracker/` (all committed to the repo,
+served from this site's own origin, never a CDN):
+
+- `avatar.vrm` — the 3D model (see "Swapping the avatar" below)
+- `avatar.LICENSE.txt` — provenance and license of the shipped model
+- `face_landmarker.task` + `wasm/` — the MediaPipe face-reading model and runtime
+
+Type-check the tracker code with:
+
+```bash
+npm run check
+```
+
+## Swapping the avatar
+
+1. Make or download a **VRM** model (VRoid Studio is free and exports VRM).
+2. Keep the file under ~8 MB — in VRoid Studio's export dialog, reduce
+   texture size (1024 or 2048) and enable polygon reduction if needed.
+3. Replace `public/tracker/avatar.vrm` with your file (keep the name).
+4. Update `public/tracker/avatar.LICENSE.txt` to describe your model.
+5. Run `npm run build`, then open `/living-portrait/` and check it loads
+   and tracks. No code changes are needed — the mapping drives the
+   standard VRM expression presets (`blink`, `happy`, `aa`/`ih`/`ou`,
+   `surprised`), which every VRM model has.
+
+If a specific expression looks off, every tuning value lives in one
+place: `DEFAULT_MAPPING_CONFIG` in `src/tracker/mapping.ts`.
+
 ## Manual QA checklist (run before each deploy)
 
 - [ ] Resize the browser (or use dev tools' device toolbar) to phone,
@@ -55,14 +92,40 @@ it's ready.
 - [ ] On `/work/`, click a project card and confirm it opens that
       character's era page (not a 404, not a different character's
       page).
+- [ ] `/living-portrait/`: on a desktop, click "Start camera", grant
+      permission — within a few seconds the avatar mirrors your head,
+      blinks, mouth, and smile, smoothly.
+- [ ] `/living-portrait/`: deny camera permission — the recovery message
+      appears with a "Try again" button that re-prompts.
+- [ ] `/living-portrait/`: click "Stop", then check your browser's
+      camera indicator has turned off (camera released).
+- [ ] `/living-portrait/`: while tracking, switch to another tab and
+      back — camera indicator turns off on leave; a "Start again" panel
+      is shown on return.
+- [ ] `/living-portrait/` on a phone — it either runs (reduced quality)
+      or shows a "runs best on a computer" message; it is never blank or
+      broken.
+- [ ] `/living-portrait/`: cover the camera / leave frame while running —
+      the avatar eases to a neutral resting pose rather than freezing or
+      glitching.
+- [ ] `/living-portrait/`: turn your head left — the avatar's head turns
+      to the *same* side of the screen (mirror, like a selfie), not the
+      opposite. Same for tilting.
 
 ## Known v1 limitations
 
 `PageLayout` currently uses a flat paper background color rather than
 the textured/vignette background originally envisioned. The `Sticker`
-and `TapeStrip` decorative components exist in `src/components/` but
-aren't used anywhere yet. Both are reasonable candidates for a
-follow-up pass.
+decorative component exists in `src/components/` but isn't used
+anywhere yet (`TapeStrip` is now used on the Living Portrait page).
+Both are reasonable candidates for a follow-up pass.
+
+The shipped placeholder avatar ("Rose", a CC0 model) has a minimal
+expression rig — it supports mouth shapes, blink, and head movement, but
+not `joy` or `surprised`, so **smile and eyebrow-raise do nothing until
+you swap in a fuller VRM**. Any VRoid Studio export includes those
+presets; see "Swapping the avatar" above. This is a limitation of the
+sample model, not the tracker.
 
 ## Before your first deploy
 
@@ -78,6 +141,10 @@ you point a real domain at this site:
       `first-light-render.md`) each have a placeholder body starting
       "Replace this with the real write-up" — write real content,
       remove the sample projects, or set `draft: true` on them.
+- [ ] `public/tracker/avatar.vrm` is a CC0 placeholder model ("Rose" by
+      Polygonal Mind). Swap in your own VRM before launch if you want a
+      personal avatar — see "Swapping the avatar" above. (Leaving the
+      placeholder is fine too; its license permits it.)
 
 ## Deploying
 

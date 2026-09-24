@@ -1,0 +1,28 @@
+Avatar: Rose (Avatar 057, 100Avatars Series R1) by Polygonal Mind
+Source: https://arweave.net/Ea1KXujzJatQgCFSMzGOzp_UtHqB1pyia--U3AtkMAY
+  (download URL from the Open Source Avatars registry, collection "100avatars-r1",
+   file data/avatars/100avatars-r1.json in https://github.com/ToxSam/open-source-avatars ;
+   same collection listed at https://www.opensourceavatars.com/en/gallery )
+Downloaded: 2026-09-08
+License: CC0 1.0 (public domain — no attribution required, no restrictions)
+
+Verbatim license statement from the source:
+"© 2026 ToxSam. All avatars CC0."
+  (site footer, https://www.opensourceavatars.com/)
+
+"**Original Collections (CC0)** — **100Avatars Series** - Our own free avatars, no
+attribution needed - Stored permanently on Arweave"
+  (README.md, https://github.com/ToxSam/open-source-avatars)
+
+projects.json entry for this collection:
+  { "id": "100avatars-r1", "name": "100Avatars R1", "creator_id": "Polygonal-Mind",
+    "license": "CC0", ... }
+  (data/projects.json, https://github.com/ToxSam/open-source-avatars)
+
+The VRM file's own embedded metadata also declares:
+  "licenseName": "CC0"   (title "Rose", author "Polygonal Mind", commercialUssageName "Allow")
+
+Notes:
+This is a placeholder avatar for development and launch. The site owner will
+replace public/tracker/avatar.vrm with their own VRoid Studio export later;
+see the "Swapping the avatar" section of README.md.
