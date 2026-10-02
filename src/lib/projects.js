@@ -42,7 +42,7 @@ export function groupByType(characters) {
   const order = [];
   const map = new Map();
   for (const character of characters) {
-    const type = character.data.type;
+    const [type] = character.data.type;
     if (!map.has(type)) {
       map.set(type, []);
       order.push(type);

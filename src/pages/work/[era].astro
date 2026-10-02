@@ -28,41 +28,43 @@ export async function getStaticPaths() {
 }
 
 const { era, characters } = Astro.props;
-const typeGroups = groupByType(characters);
+const bodyGroups = groupByType(characters);
+const tocEntries = characters.flatMap((character) =>
+  character.data.panels.map((panel, index) => ({
+    id: `${character.id}-${index}`,
+    title: panel.title,
+  })),
+);
 ---
 <PageLayout title={era}>
   <p><a href="/work/">← Back to scrapbook</a></p>
   <h1>{era}</h1>
 
   <nav class="toc" aria-label="Table of contents">
-    {typeGroups.map(({ type, characters: typeCharacters }) => (
-      <div class="toc-group">
-        <p class="toc-group-label">{type}</p>
-        <ul>
-          {typeCharacters.map((character) => (
-            <li><a href={`#${character.id}`}>{character.data.title}</a></li>
-          ))}
-        </ul>
-      </div>
-    ))}
+    <ul>
+      {tocEntries.map((entry) => (
+        <li><a href={`#${entry.id}`}>{entry.title}</a></li>
+      ))}
+    </ul>
   </nav>
 
-  {typeGroups.map(({ type, characters: typeCharacters }) => (
+  {bodyGroups.map(({ type, characters: typeCharacters }) => (
     <section class="type-section">
       <h2>{type}</h2>
       {typeCharacters.map((character) => {
         const { title, tags, panels, tools, links } = character.data;
         return (
-          <article id={character.id} tabindex="-1" class="character">
+          <article class="character">
             <h3>{title}</h3>
             <p class="meta">{era} · {tags.join(', ')}</p>
             <div class="panel-stack">
               {panels.map((panel, index) => (
-                <div class="panel">
+                <div id={`${character.id}-${index}`} tabindex="-1" class="panel">
                   {index === 0 && <p class="panel-chapter-title">{era}</p>}
                   <Polaroid
                     src={panel.image}
-                    alt={title}
+                    alt={panel.title}
+                    caption={panel.title}
                     rotate={tilts[index % tilts.length]}
                   />
                   <p class="panel-caption">{panel.caption}</p>
@@ -92,15 +94,6 @@ const typeGroups = groupByType(characters);
     padding: var(--space-3);
     background: var(--color-paper-dark);
     border: 1px solid var(--color-ink-soft);
-  }
-  .toc-group {
-    margin-bottom: var(--space-2);
-  }
-  .toc-group-label {
-    font-family: var(--font-heading);
-    font-size: 1.2rem;
-    margin: 0 0 var(--space-1);
-    text-transform: capitalize;
   }
   .toc ul {
     display: flex;
@@ -149,7 +142,7 @@ const typeGroups = groupByType(characters);
   }
   .panel-caption {
     font-family: var(--font-body);
-    margin: var(--space-2) 0 0;
+    margin: var(--space-4) 0 0;
     text-align: center;
   }
 </style>

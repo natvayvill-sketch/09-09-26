@@ -86,12 +86,22 @@ describe('groupByEra', () => {
 
 describe('groupByType', () => {
   it('groups characters by type, preserving first-appearance order of types and character order within a type', () => {
-    const xipetotl = project({ type: 'god' });
-    const leah = project({ type: 'Faulkner' });
-    const anotherGod = project({ type: 'god' });
+    const xipetotl = project({ type: ['god'] });
+    const leah = project({ type: ['Faulkner'] });
+    const anotherGod = project({ type: ['god'] });
     const result = groupByType([xipetotl, leah, anotherGod]);
     expect(result).toEqual([
       { type: 'god', characters: [xipetotl, anotherGod] },
+      { type: 'Faulkner', characters: [leah] },
+    ]);
+  });
+
+  it('groups a character under only its first listed type when it has several', () => {
+    const map = project({ type: ['Map', 'Xipetotl'] });
+    const leah = project({ type: ['Faulkner'] });
+    const result = groupByType([map, leah]);
+    expect(result).toEqual([
+      { type: 'Map', characters: [map] },
       { type: 'Faulkner', characters: [leah] },
     ]);
   });
