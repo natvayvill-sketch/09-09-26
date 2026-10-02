@@ -34,7 +34,7 @@ const tags = [...new Set(projects.flatMap((project) => project.data.tags))].sort
     <Chapter era={era}>
       {projects
         .filter((project) => project.data.era === era)
-        .map((project) => <ProjectCard project={project} />)}
+        .map((project) => <ProjectCard project={project} swapLabels />)}
     </Chapter>
   ))}
 </PageLayout>

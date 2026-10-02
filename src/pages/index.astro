@@ -20,7 +20,7 @@ const featured = visibleProjects(allProjects).filter((project) => project.data.f
   <section class="featured">
     <h2>Featured pages</h2>
     <div class="cards">
-      {featured.map((project) => <ProjectCard project={project} />)}
+      {featured.map((project) => <ProjectCard project={project} swapLabels />)}
     </div>
     <p><a href="/work/">See the full scrapbook →</a></p>
   </section>

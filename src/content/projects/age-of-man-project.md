@@ -1,9 +1,9 @@
 ---
-title: "The Age of Man"
+title: "The Second Generation seizes power"
 era: "The Age of Man"
 type: ["Map"]
 date: 2025-05-01
-tags: ["2D Art"]
+tags: []
 cover: "/images/projects/age-of-man-project/cover.png"
 panels:
  - title: "Map"

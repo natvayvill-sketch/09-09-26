@@ -3,7 +3,7 @@ title: "The Age of Gods"
 era: "The Age of Gods"
 type: ["Map", "Xipetotl"]
 date: 2025-07-12
-tags: ["2D Art"]
+tags: []
 cover: "/images/projects/celestial-drift/cover.png"
 panels:
   - title: "Map"
