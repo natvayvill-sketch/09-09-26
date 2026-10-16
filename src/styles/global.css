@@ -48,3 +48,52 @@ html {
     scroll-behavior: auto;
   }
 }
+
+/* Page-turn transition between pages, like flipping a page in the
+   scrapbook. Astro's View Transitions API snapshots the old and new
+   page into ::view-transition-old(root)/::view-transition-new(root);
+   these rules replace its default crossfade with a 3D flip. Astro's
+   ClientRouter automatically skips transitions entirely for
+   prefers-reduced-motion, so no extra media query is needed here. */
+::view-transition {
+  perspective: 1800px;
+}
+
+/* The new page sits fully visible and static underneath the whole time —
+   only the old page lifts and rotates away on top of it, like turning a
+   physical page to reveal the one that was already there. By default the
+   browser paints the new page ON TOP of the old one, which would hide the
+   flip entirely, so z-index flips that stacking back. */
+::view-transition-old(root) {
+  z-index: 2;
+  animation: 0.6s cubic-bezier(0.45, 0, 0.55, 1) both page-flip-out;
+}
+
+::view-transition-new(root) {
+  z-index: 1;
+  /* No visible change (same start/end keyframe), but matching the old
+     page's 0.6s duration keeps the whole transition from finishing early. */
+  animation: 0.6s linear both page-stay-put;
+}
+
+@keyframes page-stay-put {
+  from {
+    transform: none;
+  }
+  to {
+    transform: none;
+  }
+}
+
+@keyframes page-flip-out {
+  from {
+    transform: rotateY(0deg);
+    transform-origin: left center;
+    filter: brightness(1);
+  }
+  to {
+    transform: rotateY(-100deg);
+    transform-origin: left center;
+    filter: brightness(0.7);
+  }
+}
