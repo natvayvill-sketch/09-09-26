@@ -1,0 +1,137 @@
+BUGS LOG — Portfolio Project
+Tracked at: https://github.com/natvayvill-sketch/bugs/issues
+
+This file lists the bugs found and fixed while building this site, along
+with what caused each one and how it was resolved.
+
+================================================================================
+#1 — Dev server doesn't detect newly created content files without a restart
+https://github.com/natvayvill-sketch/bugs/issues/1
+================================================================================
+What happened:
+  After adding a brand-new project markdown file, it didn't appear on the
+  site even though the frontmatter was valid. The already-running dev
+  server (started before the file existed) never picked it up.
+
+Root cause:
+  Astro's glob-based content collection loader scans the content directory
+  on startup; a file created after that scan isn't always detected by the
+  dev server's watcher in this version.
+
+Fix:
+  Restarting the dev server (and clearing .astro/data-store.json)
+  immediately picked up the new file.
+
+
+================================================================================
+#2 — Changing `type` from a string to an array silently dropped an entire
+     project from the site
+https://github.com/natvayvill-sketch/bugs/issues/2
+================================================================================
+What happened:
+  A project's `type` field was edited from a single string to an array,
+  but the content schema still expected a string. Validation failed for
+  that entry, and the whole project silently disappeared from its era
+  page — no error shown on the site itself.
+
+Root cause:
+  Astro content collections drop any entry that fails schema validation
+  rather than partially rendering it, and the failure only surfaces in
+  server logs, not in the browser.
+
+Fix:
+  Updated the content schema so `type` accepts an array of strings, and
+  updated the grouping/table-of-contents logic to handle multiple types.
+
+
+================================================================================
+#3 — Empty string in `type` array fails validation and drops the whole
+     project
+https://github.com/natvayvill-sketch/bugs/issues/3
+================================================================================
+What happened:
+  A project had an empty string inside its `type` array. Because each
+  type value is required to be non-empty, this failed validation and the
+  entire project/era vanished from the site with no visible error.
+
+Root cause:
+  Same class of bug as #2 — a schema validation failure on one field
+  drops the entire content entry instead of just that field.
+
+Fix:
+  Replaced the empty value with a real placeholder type.
+
+
+================================================================================
+#4 — Image path pointed to the wrong file extension (cover.svg vs actual
+     cover.png)
+https://github.com/natvayvill-sketch/bugs/issues/4
+================================================================================
+What happened:
+  A project's frontmatter pointed to "cover.svg" for its image, but the
+  actual file saved to the project's image folder was "cover.png". This
+  would have produced a broken image even after the schema issue (#3)
+  was fixed.
+
+Fix:
+  Updated the frontmatter paths to match the real file on disk.
+
+
+================================================================================
+#5 — Several project cover images are multi-megabyte and slow down page
+     load
+https://github.com/natvayvill-sketch/bugs/issues/5
+================================================================================
+What happened:
+  Multiple project images were much larger than needed for web display
+  (one was ~17MB, another ~7MB), inflating page weight significantly.
+
+Fix / follow-up:
+  Flagged for compression/resizing before committing new images going
+  forward; not yet fully resolved across all existing images.
+
+
+================================================================================
+#6 — Professor couldn't view the site — shared a GitHub repo link instead
+     of the live Netlify URL
+https://github.com/natvayvill-sketch/bugs/issues/6
+================================================================================
+What happened:
+  A GitHub repository link was sent instead of the deployed site URL. A
+  repo link shows source code on GitHub, not a rendered website, so
+  nothing was visible without cloning and running the project locally.
+
+Fix:
+  Identified the existing live Netlify site and shared that link instead:
+  https://celadon-caramel-541f97.netlify.app
+
+
+================================================================================
+#7 — Live Netlify deployment was ~4 weeks and 6 commits out of date
+https://github.com/natvayvill-sketch/bugs/issues/7
+================================================================================
+What happened:
+  The production Netlify site auto-deploys from the "origin" GitHub
+  remote. Recent work had been pushed to several unrelated, ad-hoc repos
+  instead of origin, so the live site was missing weeks of changes even
+  though the work existed elsewhere.
+
+Fix:
+  Pushed all pending commits to origin and confirmed the Netlify deploy
+  completed with current content.
+
+
+================================================================================
+#8 — era/title frontmatter fields were swapped for two projects, causing
+     wrong labels to display
+https://github.com/natvayvill-sketch/bugs/issues/8
+================================================================================
+What happened:
+  Two projects had their `title` and `era` frontmatter values swapped —
+  the era name was sitting in the `title` field and vice versa — so the
+  wrong text appeared in the page heading, URL, and nav filter button.
+
+Fix:
+  Swapped the two field values back so `era` holds the chapter/era name
+  and `title` holds the specific project's own name, matching every
+  other project file's convention.

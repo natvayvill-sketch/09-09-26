@@ -17,6 +17,12 @@ export function matchesFilter(project, { era, tags }) {
   return eraMatches && tagMatches;
 }
 
+const VINTAGE_ERAS = ['The Age of Gods', 'The Age of Man', 'The Rapture'];
+
+export function isVintageEra(era) {
+  return VINTAGE_ERAS.includes(era);
+}
+
 export function slugifyEra(era) {
   return era
     .toLowerCase()

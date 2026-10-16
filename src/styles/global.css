@@ -15,6 +15,10 @@
 body {
   margin: 0;
   background-color: var(--color-paper);
+  background-image:
+    linear-gradient(rgba(243, 234, 217, 0.5), rgba(243, 234, 217, 0.5)),
+    url('/images/projects/background/background-tile.jpg');
+  background-repeat: repeat;
   color: var(--color-ink);
   font-family: var(--font-body);
   line-height: 1.6;

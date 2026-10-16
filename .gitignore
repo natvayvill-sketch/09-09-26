@@ -4,3 +4,13 @@ dist/
 .env
 .DS_Store
 .claude/worktrees/
+
+# Local Netlify folder
+.netlify
+
+# Visual brainstorming companion scratch files
+.superpowers/
+
+# Raw background texture source (14MB+) — only the optimized
+# background-tile.jpg derived from it is actually used by the site
+public/images/projects/background/background.png

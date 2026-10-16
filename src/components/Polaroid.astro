@@ -1,14 +1,18 @@
 ---
-const { src, alt, caption, rotate = 'var(--tilt-c)' } = Astro.props;
+const { src, alt, caption, rotate = 'var(--tilt-c)', vintage = false } = Astro.props;
 ---
-<figure class="polaroid" style={`--rotate: ${rotate}`}>
+<figure class={`polaroid ${vintage ? 'polaroid--vintage' : ''}`} style={`--rotate: ${rotate}`}>
   <img src={src} alt={alt} />
   {caption && <figcaption>{caption}</figcaption>}
 </figure>
 
 <style>
   .polaroid {
-    background: #fff;
+    position: relative;
+    background-color: #f6efdf;
+    background-image:
+      repeating-radial-gradient(circle at 20% 30%, rgba(0, 0, 0, 0.015) 0, rgba(0, 0, 0, 0.015) 1px, transparent 1px, transparent 3px),
+      repeating-radial-gradient(circle at 70% 60%, rgba(0, 0, 0, 0.015) 0, rgba(0, 0, 0, 0.015) 1px, transparent 1px, transparent 3px);
     padding: var(--space-2) var(--space-2) var(--space-4);
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
     transform: rotate(var(--rotate));
@@ -16,6 +20,48 @@ const { src, alt, caption, rotate = 'var(--tilt-c)' } = Astro.props;
     margin: 0;
     width: fit-content;
     max-width: 100%;
+    overflow: hidden;
+    /* Named so the sheen below tracks THIS element's position in the page's
+       scroll, not the scrollport it accidentally creates via overflow: hidden. */
+    view-timeline-name: --polaroid-view;
+    view-timeline-axis: block;
+  }
+  /* Glossy horizontal sheen whose position is tied directly to scroll
+     progress (not a fixed timer) — it tracks the photo as it moves through
+     the viewport and reverses/replays naturally as you scroll up or down. */
+  @keyframes polaroid-shine {
+    from {
+      transform: translateY(-130%);
+    }
+    to {
+      transform: translateY(130%);
+    }
+  }
+  .polaroid::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to bottom,
+      transparent 40%,
+      rgba(255, 255, 255, 0.25) 50%,
+      rgba(255, 255, 255, 0.08) 58%,
+      transparent 68%
+    );
+    pointer-events: none;
+    animation: polaroid-shine linear;
+    animation-timeline: --polaroid-view;
+  }
+  /* Vintage eras get a worn, hand-torn edge instead of a clean rectangle. */
+  .polaroid--vintage {
+    clip-path: polygon(
+      0.0% 0%, 7.7% 0.9%, 15.4% 0.0%, 23.1% 0%, 30.8% 0.3%, 38.5% 0%, 46.2% 0%, 53.8% 0.7%, 61.5% 1.0%, 69.2% 0.3%,
+      76.9% 0%, 84.6% 0%, 92.3% 0%, 100.0% 0%, 100% 7.7%, 100% 15.4%, 98.9% 23.1%, 99.3% 30.8%, 100% 38.5%, 100% 46.2%,
+      100% 53.8%, 100% 61.5%, 99.0% 69.2%, 99.1% 76.9%, 98.9% 84.6%, 100% 92.3%, 99.4% 100.0%, 92.3% 99.0%, 84.6% 100%,
+      76.9% 100%, 69.2% 100%, 61.5% 100%, 53.8% 99.5%, 46.2% 99.5%, 38.5% 100%, 30.8% 99.0%, 23.1% 100%, 15.4% 100%,
+      7.7% 99.2%, 0.0% 100%, 0.6% 92.3%, 0% 84.6%, 0.2% 76.9%, 0.2% 69.2%, 0% 61.5%, 0% 53.8%, 0.8% 46.2%, 0% 38.5%,
+      0.7% 30.8%, 0% 23.1%, 1.0% 15.4%, 1.0% 7.7%
+    );
   }
   /* Picked-up-off-the-table cue when this polaroid sits inside a project
      card link. :global() is required here: Astro scopes .polaroid to this

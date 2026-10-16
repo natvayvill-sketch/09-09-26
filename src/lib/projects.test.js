@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { isVisible, sortByDateDesc, visibleProjects, matchesFilter, slugifyEra, groupByEra, groupByType } from './projects.js';
+import { isVisible, sortByDateDesc, visibleProjects, matchesFilter, slugifyEra, groupByEra, groupByType, isVintageEra } from './projects.js';
 
 function project(overrides = {}) {
   return {
@@ -104,5 +104,19 @@ describe('groupByType', () => {
       { type: 'Map', characters: [map] },
       { type: 'Faulkner', characters: [leah] },
     ]);
+  });
+});
+
+describe('isVintageEra', () => {
+  it('returns true for eras in the vintage list', () => {
+    expect(isVintageEra('The Age of Gods')).toBe(true);
+    expect(isVintageEra('The Age of Man')).toBe(true);
+    expect(isVintageEra('The Rapture')).toBe(true);
+  });
+
+  it('returns false for eras not in the vintage list', () => {
+    expect(isVintageEra('Common Era')).toBe(false);
+    expect(isVintageEra('Reperations')).toBe(false);
+    expect(isVintageEra('Nebula Era')).toBe(false);
   });
 });

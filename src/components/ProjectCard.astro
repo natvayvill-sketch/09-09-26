@@ -1,6 +1,6 @@
 ---
 import Polaroid from './Polaroid.astro';
-import { slugifyEra } from '../lib/projects.js';
+import { slugifyEra, isVintageEra } from '../lib/projects.js';
 
 const { project, swapLabels = false } = Astro.props;
 const { title, era, tags, cover } = project.data;
@@ -9,7 +9,7 @@ const caption = swapLabels ? era : title;
 const metaPrimary = swapLabels ? title : era;
 ---
 <a class="project-card" href={href} data-era={era} data-tags={tags.join(',')}>
-  <Polaroid src={cover} alt={title} caption={caption} />
+  <Polaroid src={cover} alt={title} caption={caption} vintage={isVintageEra(era)} />
   <p class="meta">{metaPrimary} · {tags.join(', ')}</p>
 </a>
 

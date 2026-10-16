@@ -2,7 +2,7 @@
 import { getCollection } from 'astro:content';
 import PageLayout from '../../layouts/PageLayout.astro';
 import Polaroid from '../../components/Polaroid.astro';
-import { visibleProjects, groupByEra, groupByType, slugifyEra } from '../../lib/projects.js';
+import { visibleProjects, groupByEra, groupByType, slugifyEra, isVintageEra } from '../../lib/projects.js';
 
 const tilts = ['var(--tilt-a)', 'var(--tilt-b)', 'var(--tilt-c)', 'var(--tilt-d)'];
 
@@ -66,6 +66,7 @@ const tocEntries = characters.flatMap((character) =>
                     alt={panel.title}
                     caption={panel.title}
                     rotate={tilts[index % tilts.length]}
+                    vintage={isVintageEra(era)}
                   />
                   <p class="panel-caption">{panel.caption}</p>
                 </div>
