@@ -1,0 +1,95 @@
+---
+---
+<div id="pet-layer" class="pet-layer" transition:persist="pet">
+  <div class="pet" hidden>
+    <div class="pet-sprite" aria-hidden="true"></div>
+    <span class="pet-heart" aria-hidden="true">♥</span>
+    <button type="button" class="pet-dismiss" aria-label="Send the pet away">×</button>
+  </div>
+</div>
+
+<script>
+  import { startPet } from "../pet/petView";
+  startPet();
+</script>
+
+<style>
+  /* A zero-height strip along the bottom of the window. It ignores the
+     pointer so it never blocks the page; only the pet itself is clickable. */
+  .pet-layer {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 0;
+    pointer-events: none;
+    z-index: 5;
+  }
+  .pet {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: var(--pet-size, 96px);
+    height: var(--pet-size, 96px);
+    pointer-events: auto;
+    will-change: transform;
+    /* Captured separately so the page-turn doesn't flip the pet with the page. */
+    view-transition-name: pet;
+  }
+  .pet-sprite {
+    width: 100%;
+    height: 100%;
+    background-repeat: no-repeat;
+    image-rendering: pixelated;
+    cursor: pointer;
+  }
+  .pet-heart {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    color: var(--color-accent-red);
+    font-size: 1.25rem;
+    opacity: 0;
+    pointer-events: none;
+    transform: translate(-50%, 0);
+  }
+  .pet.is-reacting .pet-heart {
+    animation: pet-heart 0.8s ease-out forwards;
+  }
+  @keyframes pet-heart {
+    from {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+    to {
+      opacity: 0;
+      transform: translate(-50%, -1.5rem);
+    }
+  }
+  .pet-dismiss {
+    position: absolute;
+    top: -0.5rem;
+    right: -0.5rem;
+    width: 1.5rem;
+    height: 1.5rem;
+    padding: 0;
+    border: 1px solid var(--color-ink-soft);
+    border-radius: 50%;
+    background: var(--color-paper);
+    color: var(--color-ink);
+    font-size: 0.875rem;
+    line-height: 1;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+  .pet:hover .pet-dismiss,
+  .pet-dismiss:focus-visible {
+    opacity: 1;
+  }
+  @media (pointer: coarse) {
+    .pet-dismiss {
+      opacity: 0.7;
+    }
+  }
+</style>

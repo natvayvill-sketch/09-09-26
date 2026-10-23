@@ -3,13 +3,26 @@ const year = new Date().getFullYear();
 ---
 <footer class="footer">
   <p>&copy; {year} — made with Astro.</p>
+  <button type="button" class="pet-restore" data-pet-restore hidden>Bring the pet back</button>
 </footer>
 
 <style>
   .footer {
     padding: var(--space-4);
+    /* Room for the pet (up to 96px tall), so at the very bottom of the page
+       it walks below the footer text instead of over it. */
+    padding-bottom: calc(var(--space-4) + 6.5rem);
     text-align: center;
     color: var(--color-ink-soft);
     font-size: 0.875rem;
+  }
+  .pet-restore {
+    background: none;
+    border: none;
+    padding: 0;
+    color: var(--color-accent-teal);
+    font: inherit;
+    text-decoration: underline;
+    cursor: pointer;
   }
 </style>
