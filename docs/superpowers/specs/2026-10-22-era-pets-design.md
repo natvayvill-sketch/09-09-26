@@ -84,7 +84,7 @@ swapping pets.
 - **idle**: waits a few seconds, then usually walks and sometimes sits.
 - **walk**: walks to a random spot along the bottom, then goes back to idle.
 - **sit**: after a while, may fall asleep.
-- **sleep**: stays asleep until woken.
+- **sleep**: naps until woken, or wakes on its own after a long while (so the site never ends up with every pet asleep). In reduced-motion mode it goes straight back to sit and sleep.
 - **notice**: when the cursor comes within ~120 px, the pet stops, turns towards it and
   plays "notice". If the cursor stays nearby, it shuffles a step or two towards it (it never
   chases across the screen). When the cursor leaves, it goes back to idle.
