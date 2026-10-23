@@ -60,6 +60,22 @@ export function choosePet(
   return pets[DEFAULT_PET_ID]!;
 }
 
+/**
+ * Which pet a page shows, and which era to remember for later pages. Only
+ * eras that have a pet are remembered, so visiting a petless era keeps the
+ * remembered pet instead of resetting to the default.
+ */
+export function petForPage(
+  era: string | null,
+  rememberedEra: string | null,
+  eraPets: Record<string, string> = ERA_PETS,
+  pets: Record<string, PetDef> = PETS,
+): { pet: PetDef; remember: string | null } {
+  const id = era ? eraPets[era] : undefined;
+  const hasPet = id !== undefined && pets[id] !== undefined;
+  return { pet: choosePet(era, rememberedEra, eraPets, pets), remember: hasPet ? era : null };
+}
+
 export function spriteUrl(pet: PetDef, anim: AnimName): string {
   return `/pets/${pet.id}/${anim}.png`;
 }

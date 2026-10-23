@@ -4,6 +4,7 @@ import {
   ERA_PETS,
   PETS,
   choosePet,
+  petForPage,
   settingsFor,
   spriteUrl,
   type PetDef,
@@ -36,6 +37,30 @@ describe("choosePet", () => {
   });
 });
 
+describe("petForPage", () => {
+  it("remembers an era that has a pet", () => {
+    const r = petForPage("Age of Cats", "Age of Owls", eraPets, pets);
+    expect(r.pet.id).toBe("cat");
+    expect(r.remember).toBe("Age of Cats");
+  });
+
+  it("keeps the remembered pet on an era without one, and doesn't remember that era", () => {
+    const r = petForPage("Unknown Era", "Age of Owls", eraPets, pets);
+    expect(r.pet.id).toBe("owl");
+    expect(r.remember).toBeNull();
+  });
+
+  it("doesn't remember an era whose roster entry points at a missing pet", () => {
+    expect(petForPage("Broken Era", null, eraPets, pets).remember).toBeNull();
+  });
+
+  it("remembers nothing on pages without an era", () => {
+    const r = petForPage(null, "Age of Owls", eraPets, pets);
+    expect(r.pet.id).toBe("owl");
+    expect(r.remember).toBeNull();
+  });
+});
+
 describe("spriteUrl / settingsFor", () => {
   it("builds the strip path from the pet id and animation", () => {
     expect(spriteUrl(pet("cat"), "walk")).toBe("/pets/cat/walk.png");
@@ -65,15 +90,38 @@ describe("the real roster", () => {
     }
   });
 
-  it("has a PNG on disk for every animation a pet lists", async () => {
+  it("has a correctly named, correctly sized PNG for every animation a pet lists", async () => {
     // @types/node isn't installed, so load node:fs untyped.
     const fsModule: string = "node:fs";
-    const { existsSync } = (await import(/* @vite-ignore */ fsModule)) as {
-      existsSync(path: string): boolean;
+    const fs = (await import(/* @vite-ignore */ fsModule)) as {
+      readdirSync(path: string): string[];
+      readFileSync(path: string): Uint8Array;
     };
-    const missing = Object.values(PETS)
-      .flatMap((def) => def.anims.map((anim) => `public${spriteUrl(def, anim)}`))
-      .filter((path) => !existsSync(path));
-    expect(missing).toEqual([]);
+    const problems: string[] = [];
+    for (const def of Object.values(PETS)) {
+      const dir = `public/pets/${def.id}`;
+      let files: string[] = [];
+      try {
+        files = fs.readdirSync(dir);
+      } catch {
+        // missing folder: every strip below is reported missing
+      }
+      for (const anim of def.anims) {
+        // Exact-name match: macOS ignores case, but most web hosts don't.
+        const name = `${anim}.png`;
+        if (!files.includes(name)) {
+          problems.push(`${dir}/${name} is missing`);
+          continue;
+        }
+        const png = fs.readFileSync(`${dir}/${name}`);
+        const header = new DataView(png.buffer, png.byteOffset, png.byteLength);
+        const width = header.getUint32(16);
+        const height = header.getUint32(20);
+        if (height !== def.frameSize || width % def.frameSize !== 0) {
+          problems.push(`${dir}/${name} is ${width}x${height}, not a strip of ${def.frameSize}px frames`);
+        }
+      }
+    }
+    expect(problems).toEqual([]);
   });
 });

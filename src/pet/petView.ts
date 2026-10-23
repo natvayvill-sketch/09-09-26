@@ -1,7 +1,7 @@
 import type { AnimName, BehaviorSettings, PetState, Surface } from "./types";
 import { createPetState, requestSwap, step } from "./behavior";
 import { animFor, frameAt, hop, loops, resolveAnim } from "./animation";
-import { DEFAULT_FPS, choosePet, settingsFor, spriteUrl, type PetDef } from "./roster";
+import { DEFAULT_FPS, petForPage, settingsFor, spriteUrl, type PetDef } from "./roster";
 import { readHidden, readLastEra, writeHidden, writeLastEra } from "./memory";
 
 /** A pet whose strips have loaded, with each strip's frame count. */
@@ -42,6 +42,14 @@ async function loadPet(def: PetDef): Promise<LoadedPet | null> {
   for (const r of results) if (r) frames[r[0]] = r[1];
   if (!frames.idle || !frames.walk) return null;
   return { def, frames, available: Object.keys(frames) as AnimName[], cfg: settingsFor(def) };
+}
+
+/**
+ * A swap queued while the pet was dismissed never got its exit hop (the loop
+ * was stopped), so on restore the queued pet comes in directly.
+ */
+export function petAfterRestore<T>(current: T, pending: T | null): T {
+  return pending ?? current;
 }
 
 function readPageEra(): string | null {
@@ -190,7 +198,11 @@ export function startPet(): void {
     if (!(event.target instanceof Element) || !event.target.closest("[data-pet-restore]")) return;
     hidden = false;
     writeHidden(false);
-    if (pet && state) state = createPetState(state.x, pet.cfg);
+    if (pet && state) {
+      pet = petAfterRestore(pet, pending);
+      pending = null;
+      state = createPetState(state.x, pet.cfg);
+    }
     applyHidden();
   });
 
@@ -211,9 +223,9 @@ export function startPet(): void {
   // Fires on the first load and after every ClientRouter navigation. The pet
   // element itself is persisted, so only the era (and the footer) change.
   document.addEventListener("astro:page-load", () => {
-    const era = readPageEra();
-    if (era) writeLastEra(era);
+    const { pet: next, remember } = petForPage(readPageEra(), readLastEra());
+    if (remember) writeLastEra(remember);
     applyHidden();
-    void switchTo(choosePet(era, readLastEra()));
+    void switchTo(next);
   });
 }
