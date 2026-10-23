@@ -15,7 +15,7 @@ at the bottom of the window and react lightly to the visitor, but never get in t
 | Purpose | Ambient charm, not a game or a guide |
 | Where | Every page |
 | Which pet | Era page → that era's pet. Any other page → the pet of the last era visited. No era visited yet → a mini Living Portrait character (the default companion). |
-| Art | Pixel-art sprite sheets |
+| Art | Pixel-art sprite strips, one PNG per animation |
 | Movement (now) | Walks along the bottom of the window |
 | Movement (later) | Wanders over the page, Shimeji-style (climbs window edges, sits on polaroids). Not built now, but the design leaves room for it. |
 | Reactions | Notices the cursor, and reacts to clicks |
@@ -31,14 +31,14 @@ separate from a thin layer that touches the page.
   direction (or none), whether the pet was clicked, and the surfaces it can stand on.
   It is fully unit-tested, and randomness comes from an `rng` that is passed in so tests
   are predictable.
-- **`roster.ts`**: data only. Maps an era name to a pet definition: sprite sheet URL, frame
-  size, display scale, animation rows (row index, frame count, fps), and optional
+- **`roster.ts`**: data only. Maps an era name to a pet definition: sprite folder, frame
+  size, display scale, which animation files exist (and their fps), and optional
   behaviour-setting overrides. Includes the default `livingPortrait` pet.
   Exports `choosePet(currentEra, rememberedEra) → PetDef`.
 - **`memory.ts`**: reads and writes the last era visited in `localStorage`. Every access is
   wrapped in try/catch, and failures just mean "nothing remembered".
 - **`petView.ts`**: the only part that touches the DOM. It positions the pet element, sets
-  the sprite frame via `background-position`, flips it with `scaleX(-1)`, measures cursor
+  the sprite frame (per-animation strip image + `background-position`), flips it with `scaleX(-1)`, measures cursor
   distance, handles clicks and taps, runs the `requestAnimationFrame` loop, and pauses
   while the tab is hidden.
 - **`Pet.astro`**: the component, placed once in `PageLayout.astro` with
@@ -54,16 +54,18 @@ on". For now the only surface is the bottom of the window. Later, `petView` adds
 tops and window edges as surfaces, and `behavior.ts` gains climb and jump states.
 Nothing gets rewritten.
 
-## Sprite sheet format
+## Sprite format
 
-- One PNG per pet in `public/pets/`, laid out as a grid: **one row per animation**,
-  **one column per frame**.
-- Frames are all the same size. Default **32×32 px**, shown at 2× or 3× with
-  `image-rendering: pixelated`.
+- Each pet has its own folder, `public/pets/<pet-id>/`, with **one PNG per animation**.
+  The file name is the animation name (`idle.png`, `walk.png`, ...).
+- Each file is **one horizontal strip** of frames, left to right, 32 px tall.
+  A 4-frame walk is 128×32. The code works out the frame count from the image width
+  (width ÷ frame size), so nobody has to type it in.
+- Frames are **32×32 px**, shown at 2× or 3× with `image-rendering: pixelated`.
 - Draw the pet **facing right only**. The code mirrors it for walking left.
-- Animation rows:
+- Animations (files):
 
-  | Row | Frames | Notes |
+  | File | Frames | Notes |
   |---|---|---|
   | idle | 2–4 | **required** |
   | walk | 4–6 | **required** |
@@ -72,7 +74,7 @@ Nothing gets rewritten.
   | notice | 1–2 | looking up or alert; falls back to idle |
   | react | 3–4 | hop or happy face; falls back to idle |
 
-- Missing rows fall back as shown, so a pet can start with just idle and walk.
+- Missing files fall back as shown, so a pet can start with just `idle.png` and `walk.png`.
 
 ## Behaviour
 
@@ -114,7 +116,7 @@ values (for example, a sleepier pet).
 
 ## Error handling
 
-- If a sprite sheet fails to load, no pet is shown and nothing else is affected.
+- If a pet's required strips (idle, walk) fail to load, no pet is shown and nothing else is affected.
 - An era with no roster entry uses the remembered pet, then the mini portrait.
 - If storage is unavailable, nothing is remembered and the mini portrait is used.
 - The loop pauses while the tab is hidden.
@@ -124,7 +126,7 @@ values (for example, a sleepier pet).
 Unit tests with vitest:
 - `behavior.ts`: every state change, the "sleeping pet only wakes if the cursor stays
   close" rule, the click cooldown, and the walk target staying within the surface.
-- `roster.ts`: `choosePet` priority, and fallbacks for missing animation rows.
+- `roster.ts`: `choosePet` priority, and fallbacks for missing animation files.
 - `memory.ts`: storage that throws on access.
 
 Checked by hand by running the site: walking across page-turns, era swaps, reduced
@@ -138,8 +140,8 @@ motion, dismiss and restore, and a phone-width viewport.
 
 ## Art needed
 
-- One sprite sheet per era pet, plus the mini Living Portrait pet.
-- Development can start with a placeholder sprite sheet so the code doesn't wait on the art.
+- One folder of animation strips per era pet, plus the mini Living Portrait pet.
+- Development can start with placeholder strips so the code doesn't wait on the art.
 
 ## Notes found while designing
 
