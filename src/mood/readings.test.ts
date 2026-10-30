@@ -57,8 +57,12 @@ describe("readMood", () => {
     expect(readMood({ browOuterUpLeft: 0.4 }, 0).puzzled).toBeCloseTo(0.8);
   });
 
-  it("a head tilt reads as puzzled, either way", () => {
-    expect(readMood({}, 0.25).puzzled).toBeCloseTo(1);
-    expect(readMood({}, -0.125).puzzled).toBeCloseTo(0.5);
+  it("a clear head tilt reads as puzzled, either way", () => {
+    expect(readMood({}, 0.45).puzzled).toBeCloseTo(1);
+    expect(readMood({}, -0.45).puzzled).toBeCloseTo(1);
+  });
+
+  it("a small resting tilt (about 7 degrees) doesn't read as puzzled", () => {
+    expect(readMood({}, 0.125).puzzled).toBeLessThan(DEFAULT_MOOD_SETTINGS.alert.off);
   });
 });

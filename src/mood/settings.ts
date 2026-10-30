@@ -20,7 +20,7 @@ export interface MoodSettings {
 
 export const DEFAULT_MOOD_SETTINGS: MoodSettings = {
   gain: { smile: 1.3, frown: 1.5, sad: 1.5, shocked: 1.6, puzzledBrow: 2 },
-  puzzledTiltRad: 0.25,
+  puzzledTiltRad: 0.45,
   smoothingMs: 200,
   deadzone: 0.15,
   rainStart: 0.3,
