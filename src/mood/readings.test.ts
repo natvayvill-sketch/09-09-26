@@ -27,9 +27,15 @@ describe("readMood", () => {
   });
 
   it("talking does not read as shocked", () => {
-    const r = readMood({ jawOpen: 0.5 }, 0);
-    expect(r.shocked).toBeCloseTo(0.4);
-    expect(r.shocked).toBeLessThan(DEFAULT_MOOD_SETTINGS.alert.on);
+    // Real resting faces aren't all zeros: inner brows and eyes idle a little up.
+    const r = readMood({ jawOpen: 0.6, browInnerUp: 0.2, eyeWideLeft: 0.05, eyeWideRight: 0.05 }, 0);
+    expect(r.shocked).toBeLessThan(DEFAULT_MOOD_SETTINGS.alert.off);
+  });
+
+  it("a laugh with the mouth wide open does not read as shocked", () => {
+    expect(readMood({ jawOpen: 1, mouthSmileLeft: 0.9, mouthSmileRight: 0.9 }, 0).shocked).toBeLessThan(
+      DEFAULT_MOOD_SETTINGS.alert.off,
+    );
   });
 
   it("wide eyes, raised brows and open mouth read as shocked", () => {

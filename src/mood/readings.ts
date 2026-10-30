@@ -27,10 +27,12 @@ export function readMood(
       avg("mouthFrownLeft", "mouthFrownRight") * cfg.gain.sad +
         Math.max(0, v("browInnerUp") - outerBrows) * 0.5,
     ),
-    // The jaw alone only gets half way, so talking doesn't read as shock.
+    // Wide eyes and raised brows make the shock; an open mouth only boosts it,
+    // so talking and laughing alone never read as shocked.
     shocked: clamp01(
-      (((avg("eyeWideLeft", "eyeWideRight") + browsUp) / 2 + v("jawOpen")) / 2) *
-        cfg.gain.shocked,
+      ((avg("eyeWideLeft", "eyeWideRight") + browsUp) / 2) *
+        cfg.gain.shocked *
+        (0.6 + 0.4 * v("jawOpen")),
     ),
     puzzled: clamp01(
       Math.max(
