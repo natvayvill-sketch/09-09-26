@@ -14,6 +14,8 @@ export interface MoodSettings {
   starCount: number;
   /** "!" and "?" turn on at `on` and off below `off`, so they don't flicker. */
   alert: { on: number; off: number };
+  /** How much stronger the other side must be to take over the background. */
+  winnerMargin: number;
 }
 
 export const DEFAULT_MOOD_SETTINGS: MoodSettings = {
@@ -24,4 +26,5 @@ export const DEFAULT_MOOD_SETTINGS: MoodSettings = {
   rainStart: 0.3,
   starCount: 7,
   alert: { on: 0.5, off: 0.35 },
+  winnerMargin: 0.1,
 };

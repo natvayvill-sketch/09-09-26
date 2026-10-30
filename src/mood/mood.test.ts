@@ -53,6 +53,27 @@ describe("moodFrame", () => {
   });
 });
 
+describe("background winner", () => {
+  it("a close smile-versus-frown doesn't flip the background", () => {
+    let s = settle(face({ smile: 0.5 }));
+    s = settle(face({ smile: 0.5, frown: 0.55 }), 3000, s);
+    const f = moodFrame(s);
+    expect(f.stars).toBeGreaterThan(0);
+    expect(f.clouds).toBe(0);
+  });
+
+  it("a clearly stronger frown takes over from a smile", () => {
+    let s = settle(face({ smile: 0.5 }));
+    s = settle(face({ smile: 0.5, frown: 0.7 }), 3000, s);
+    expect(moodFrame(s).clouds).toBeGreaterThan(0);
+    expect(moodFrame(s).stars).toBe(0);
+  });
+
+  it("from a neutral face, even a small frown brings clouds", () => {
+    expect(moodFrame(settle(face({ frown: 0.3 }))).clouds).toBeGreaterThan(0);
+  });
+});
+
 describe("stepMood", () => {
   it("alerts don't flicker between thresholds", () => {
     let s = settle(face({ shocked: 0.6 }));

@@ -16,6 +16,8 @@ export interface MoodState {
   smoothed: MoodReadings;
   exclaim: boolean;
   question: boolean;
+  /** Frown/sad currently holds the background (clouds) rather than the smile (stars). */
+  gloom: boolean;
 }
 
 /** What to show this frame. */

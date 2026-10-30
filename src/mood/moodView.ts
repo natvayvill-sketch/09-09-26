@@ -23,6 +23,8 @@ const FALLBACK_ANCHOR: HeadAnchor = { x: 0.5, y: 0.4, size: 0.35, roll: 0 };
 const ART_PX_PER_STAGE = 160;
 const STAR_SLIDE_MS = 600;
 const ALERT_POP_MS = 250;
+/** Light, clouds and rain ease towards their targets over this long, so the losing side retreats. */
+const FADE_MS = 400;
 const MAX_DROPS = 30;
 /** Clouds per side: [vertical offset in head sizes, scale relative to the art scale]. */
 const CLOUDS: readonly (readonly [number, number])[] = [
@@ -121,6 +123,8 @@ export function createMoodView(opts: {
   let rafId = 0;
   let lastTs = 0;
   let clockMs = 0;
+  /** Eased on-screen values of the frame's light, clouds and rain. */
+  const shown = { light: 0, clouds: 0, rain: 0 };
 
   /** Places a sprite centred on (x, y) in layer px. */
   function place(
@@ -159,9 +163,14 @@ export function createMoodView(opts: {
     const toX = (fx: number): number => fx * stageW + offX;
     const toY = (fy: number): number => fy * stageH + offY;
     const art = stageW / ART_PX_PER_STAGE;
+    for (const key of ["light", "clouds", "rain"] as const) {
+      const step = dtMs / FADE_MS;
+      const diff = frame[key] - shown[key];
+      shown[key] = Math.abs(diff) <= step ? frame[key] : shown[key] + Math.sign(diff) * step;
+    }
 
     // Light: grows with the smile, behind the head.
-    place(light, toX(anchor.x), toY(anchor.y), art * 1.5, frame.light, reduced ? 1 : 0.6 + 0.4 * frame.light);
+    place(light, toX(anchor.x), toY(anchor.y), art * 1.5, shown.light, reduced ? 1 : 0.6 + 0.4 * shown.light);
 
     // Stars: centre-first, each sliding out from behind the head.
     const spots = starArc(anchor, stars.length);
@@ -187,17 +196,17 @@ export function createMoodView(opts: {
     const spill = offX / stageW;
     for (const c of clouds) {
       const w = (PIECES.cloud.frameSize * art * c.scale) / stageW;
-      const x = cloudX(reduced ? 1 : frame.clouds, c.side, anchor, w, spill);
+      const x = cloudX(reduced ? 1 : shown.clouds, c.side, anchor, w, spill);
       const sp = c.s;
-      place(sp, toX(x), toY(anchor.y + c.dy * anchor.size), art * c.scale, reduced ? frame.clouds : frame.clouds > 0 ? 1 : 0);
-      sp.el.style.filter = `brightness(${1 - 0.55 * frame.clouds})`;
+      place(sp, toX(x), toY(anchor.y + c.dy * anchor.size), art * c.scale, reduced ? shown.clouds : shown.clouds > 0 ? 1 : 0);
+      sp.el.style.filter = `brightness(${1 - 0.55 * shown.clouds})`;
     }
 
     // Rain: drops falling from under the clouds, or a grey tint under reduced motion.
-    const shown = reduced ? 0 : Math.round(frame.rain * MAX_DROPS);
+    const dropCount = reduced ? 0 : Math.round(shown.rain * MAX_DROPS);
     const topY = toY(anchor.y - anchor.size * 0.3);
     drops.forEach((d, i) => {
-      if (i >= shown) {
+      if (i >= dropCount) {
         d.el.style.opacity = "0";
         return;
       }
@@ -206,7 +215,7 @@ export function createMoodView(opts: {
       const x = ((i * 37) % 100) / 100;
       place(d, x * layerW, topY + fall * (layerH - topY), art, 1, 1, false);
     });
-    tint.style.opacity = String(reduced ? frame.rain * 0.35 : 0);
+    tint.style.opacity = String(reduced ? shown.rain * 0.35 : 0);
 
     // "!" and "?": pop up from the top of the head, side by side when both show.
     const present = alertSpots(anchor, exclaim.p > 0 || frame.exclaim, question.p > 0 || frame.question);
@@ -241,6 +250,9 @@ export function createMoodView(opts: {
       frame.light === 0 &&
       frame.stars === 0 &&
       frame.clouds === 0 &&
+      shown.light === 0 &&
+      shown.clouds === 0 &&
+      shown.rain === 0 &&
       !frame.exclaim &&
       !frame.question &&
       stars.every((s) => s.p === 0) &&
