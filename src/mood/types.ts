@@ -31,3 +31,23 @@ export interface MoodFrame {
   exclaim: boolean;
   question: boolean;
 }
+
+/**
+ * Where the character's head is, as fractions of the stage (0..1; may go past
+ * the edges). Provided by whichever renderer draws the character.
+ */
+export interface HeadAnchor {
+  /** Head centre. */
+  x: number;
+  y: number;
+  /** Head height as a fraction of the stage height. */
+  size: number;
+  /** Screen-space tilt, radians. */
+  roll: number;
+}
+
+/** A position in stage fractions. */
+export interface Spot {
+  x: number;
+  y: number;
+}
