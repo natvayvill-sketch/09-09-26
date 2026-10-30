@@ -94,6 +94,9 @@ export function reduce(state: TrackerState, event: TrackerEvent): Result {
       }
       return noop;
 
+    case "TEARDOWN":
+      return stop();
+
     default:
       return noop;
   }

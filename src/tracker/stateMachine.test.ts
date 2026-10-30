@@ -113,6 +113,15 @@ describe("stateMachine.reduce", () => {
     expect(r.state.unsupportedReason).toBe("no-webgl2");
   });
 
+  it.each(["intro", "requesting", "denied", "loading", "running", "struggling", "paused", "stopped", "error", "unsupported"] as const)(
+    "%s + TEARDOWN -> stopped, stops loop and releases camera",
+    (name) => {
+      const r = reduce(at(name), { type: "TEARDOWN" });
+      expect(r.state.name).toBe("stopped");
+      expect(r.effects).toEqual(expect.arrayContaining(["stop-loop", "release-camera"]));
+    },
+  );
+
   it("ignores events with no transition (no-op, same state, no effects)", () => {
     const r = reduce(at("intro"), { type: "LOAD_OK" });
     expect(r.state.name).toBe("intro");

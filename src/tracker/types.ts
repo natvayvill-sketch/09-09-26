@@ -70,6 +70,8 @@ export type TrackerEvent =
   | { type: "KEEP_GOING" }
   | { type: "STOP" }
   | { type: "HIDDEN" }
+  /** The page is being left (ClientRouter navigation): shut everything down. */
+  | { type: "TEARDOWN" }
   | { type: "UNSUPPORTED"; reason: UnsupportedReason };
 
 /** Side effects the imperative shell performs after a transition. */

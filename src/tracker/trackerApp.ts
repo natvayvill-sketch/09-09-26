@@ -16,7 +16,8 @@ interface StartOpts {
   avatarUrl: string;
 }
 
-export function start(opts: StartOpts): void {
+/** Starts the portrait. Returns a cleanup that shuts it down (camera, loop, listeners). */
+export function start(opts: StartOpts): () => void {
   let state: TrackerState = INITIAL_STATE;
   let stream: MediaStream | null = null;
   let faceTracker: FaceTracker | null = null;
@@ -27,6 +28,8 @@ export function start(opts: StartOpts): void {
   let fpsEma = 60;
   let lastRaw: import("./types").RawFaceInput | null = null;
   let lastDetectTs = 0;
+  /** Set by the cleanup; async steps still in flight check it and bail out. */
+  let disposed = false;
 
   const tier = pickTier(readDeviceSignals());
   // Detection runs at the tier's target rate, not the display rate; the
@@ -75,6 +78,7 @@ export function start(opts: StartOpts): void {
         try {
           if (!faceTracker) {
             const { createFaceTracker } = await import("./faceTracker");
+            if (disposed) return;
             try {
               faceTracker = await createFaceTracker({
                 wasmBase: opts.wasmBase,
@@ -89,17 +93,29 @@ export function start(opts: StartOpts): void {
                 delegate: "CPU",
               });
             }
+            if (disposed) {
+              faceTracker.close();
+              faceTracker = null;
+              return;
+            }
           }
           if (!scene) {
             const { createVrmScene } = await import("./vrmScene");
+            if (disposed) return;
             scene = createVrmScene();
             const rect = opts.canvas.getBoundingClientRect();
             scene.mount(opts.canvas, rect.width || 480, rect.height || 480);
             scene.setQuality(tier);
             await scene.loadAvatar(opts.avatarUrl);
+            if (disposed) {
+              scene.dispose();
+              scene = null;
+              return;
+            }
           }
           dispatch({ type: "LOAD_OK" });
         } catch (err) {
+          if (disposed) return;
           console.error("[living-portrait] load failed", err);
           // a scene that failed mid-load must not be reused: a retry would
           // skip the `if (!scene)` block and render an avatar-less scene.
@@ -165,17 +181,28 @@ export function start(opts: StartOpts): void {
     draw();
   }
 
-  // No teardown: this site is a plain multi-page app, so navigating away is a
-  // full document unload that drops these listeners and the whole tracker.
-  // If a client-side router (Astro ClientRouter / View Transitions) is ever
-  // added, start() will need to return a cleanup function.
-  document.addEventListener("visibilitychange", () => {
+  // The site uses <ClientRouter />, so leaving the page doesn't unload the
+  // document: bootstrap.ts calls the cleanup returned here on navigation.
+  const onVisibility = (): void => {
     if (document.visibilityState === "hidden") dispatch({ type: "HIDDEN" });
-  });
-
-  window.addEventListener("resize", () => {
+  };
+  const onResize = (): void => {
     if (!scene) return;
     const rect = opts.canvas.getBoundingClientRect();
     scene.resize(rect.width || 480, rect.height || 480);
-  });
+  };
+  document.addEventListener("visibilitychange", onVisibility);
+  window.addEventListener("resize", onResize);
+
+  return () => {
+    if (disposed) return;
+    disposed = true;
+    dispatch({ type: "TEARDOWN" });
+    document.removeEventListener("visibilitychange", onVisibility);
+    window.removeEventListener("resize", onResize);
+    faceTracker?.close();
+    faceTracker = null;
+    scene?.dispose();
+    scene = null;
+  };
 }
