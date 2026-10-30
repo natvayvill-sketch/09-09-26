@@ -23,6 +23,8 @@ function mount(): void {
     modelUrl: "/tracker/face_landmarker.task",
     wasmBase: "/tracker/wasm",
     avatarUrl: "/tracker/avatar.vrm",
+    moodBack: document.getElementById("lp-mood-back") ?? undefined,
+    moodFront: document.getElementById("lp-mood-front") ?? undefined,
   });
 }
 

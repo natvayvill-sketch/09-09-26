@@ -2,6 +2,7 @@ import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { VRMLoaderPlugin, VRMUtils, type VRM } from "@pixiv/three-vrm";
 import type { PoseUpdate, QualityTier } from "./types";
+import type { HeadAnchor } from "../mood/types";
 
 export interface VrmScene {
   mount(canvas: HTMLCanvasElement, width: number, height: number): void;
@@ -10,16 +11,20 @@ export interface VrmScene {
   render(deltaSeconds: number): void;
   setQuality(tier: QualityTier): void;
   resize(width: number, height: number): void;
+  /** Where the head is on the stage, for the mood effects. null before the avatar loads. */
+  headAnchor(): HeadAnchor | null;
   dispose(): void;
 }
 
 export function createVrmScene(): VrmScene {
+  // No scene background: the canvas is see-through so the mood effects can sit
+  // between the page's paper tint (.lp-stage) and the character.
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color("#e9dcc2"); // soft paper-adjacent tint
 
+  // Framed with headroom above the head for the stars and the "!" / "?".
   const camera = new THREE.PerspectiveCamera(28, 1, 0.1, 20);
-  camera.position.set(0, 1.35, 1.1);
-  camera.lookAt(0, 1.35, 0);
+  camera.position.set(0, 1.38, 1.35);
+  camera.lookAt(0, 1.38, 0);
 
   const hemi = new THREE.HemisphereLight(0xffffff, 0x8a7a5c, 1.4);
   scene.add(hemi);
@@ -47,7 +52,8 @@ export function createVrmScene(): VrmScene {
 
   return {
     mount(canvas, width, height) {
-      renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
+      renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+      renderer.setClearColor(0x000000, 0);
       renderer.setSize(width, height, false);
       camera.aspect = width / height;
       camera.updateProjectionMatrix();
@@ -111,6 +117,31 @@ export function createVrmScene(): VrmScene {
       renderer?.setSize(width, height, false);
       camera.aspect = width / height;
       camera.updateProjectionMatrix();
+    },
+
+    headAnchor() {
+      const head = vrm?.humanoid?.getNormalizedBoneNode("head");
+      if (!head) return null;
+      // The head bone sits at the base of the skull; its centre is a little higher.
+      const base = head.getWorldPosition(new THREE.Vector3());
+      const up = new THREE.Vector3(0, 1, 0).applyQuaternion(head.getWorldQuaternion(new THREE.Quaternion()));
+      const centre = base.clone().addScaledVector(up, 0.08);
+      const top = centre.clone().addScaledVector(up, 0.125);
+      const bottom = centre.clone().addScaledVector(up, -0.125);
+      const toStage = (v: THREE.Vector3): { x: number; y: number } => {
+        const ndc = v.clone().project(camera);
+        return { x: (ndc.x + 1) / 2, y: (1 - ndc.y) / 2 };
+      };
+      const c = toStage(centre);
+      const t = toStage(top);
+      const b = toStage(bottom);
+      return {
+        x: c.x,
+        y: c.y,
+        size: Math.hypot(t.x - b.x, t.y - b.y),
+        // Screen-space tilt: positive when the top of the head leans right.
+        roll: Math.atan2(t.x - b.x, b.y - t.y),
+      };
     },
 
     dispose() {

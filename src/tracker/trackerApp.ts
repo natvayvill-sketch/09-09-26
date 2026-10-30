@@ -1,11 +1,12 @@
 import type { TrackerState, TrackerEvent, TrackerEffect, MappingState } from "./types";
 import { INITIAL_STATE, reduce } from "./stateMachine";
-import { createMappingState, mapFaceToPose, DEFAULT_MAPPING_CONFIG } from "./mapping";
+import { createMappingState, mapFaceToPose, matrixToEuler, DEFAULT_MAPPING_CONFIG } from "./mapping";
 import { readDeviceSignals, hasWebGL2, pickTier, FrameRateWatchdog } from "./degradation";
 import { requestCamera, stopCamera } from "./camera";
 import { renderState } from "./ui";
 import type { FaceTracker } from "./faceTracker";
 import type { VrmScene } from "./vrmScene";
+import { createMoodView } from "../mood/moodView";
 
 interface StartOpts {
   root: HTMLElement;
@@ -14,6 +15,9 @@ interface StartOpts {
   modelUrl: string;
   wasmBase: string;
   avatarUrl: string;
+  /** Layers behind and in front of the character for the mood effects. */
+  moodBack?: HTMLElement;
+  moodFront?: HTMLElement;
 }
 
 /** Starts the portrait. Returns a cleanup that shuts it down (camera, loop, listeners). */
@@ -30,6 +34,11 @@ export function start(opts: StartOpts): () => void {
   let lastDetectTs = 0;
   /** Set by the cleanup; async steps still in flight check it and bail out. */
   let disposed = false;
+  const stage = opts.canvas.parentElement;
+  const mood =
+    opts.moodBack && opts.moodFront && stage
+      ? createMoodView({ back: opts.moodBack, front: opts.moodFront, stage })
+      : null;
 
   const tier = pickTier(readDeviceSignals());
   // Detection runs at the tier's target rate, not the display rate; the
@@ -150,6 +159,15 @@ export function start(opts: StartOpts): () => void {
               const mapped = mapFaceToPose(lastRaw, mapState, DEFAULT_MAPPING_CONFIG);
               mapState = mapped.state;
               scene.applyPose(mapped.pose);
+              mood?.update(
+                lastRaw.faceConfidence < DEFAULT_MAPPING_CONFIG.confidenceFloor
+                  ? null
+                  : {
+                      blendshapes: lastRaw.blendshapes,
+                      headRollRad: lastRaw.headMatrix ? matrixToEuler(lastRaw.headMatrix).z : 0,
+                      anchor: scene.headAnchor(),
+                    },
+              );
             }
           }
           scene?.render(dt);
@@ -160,6 +178,7 @@ export function start(opts: StartOpts): () => void {
       case "stop-loop": {
         cancelAnimationFrame(rafId);
         rafId = 0;
+        mood?.update(null);
         return;
       }
       case "release-camera": {
@@ -204,5 +223,6 @@ export function start(opts: StartOpts): () => void {
     faceTracker = null;
     scene?.dispose();
     scene = null;
+    mood?.dispose();
   };
 }
