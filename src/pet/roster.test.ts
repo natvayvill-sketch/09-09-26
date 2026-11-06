@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import {
   DEFAULT_PET_ID,
   ERA_PETS,
-  PETS,
+  PETS, 
   choosePet,
   petForPage,
   settingsFor,

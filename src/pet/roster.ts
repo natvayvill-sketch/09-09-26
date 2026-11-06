@@ -53,11 +53,18 @@ export const PETS: Record<string, PetDef> = {
       blinkMs: [5000, 12000],
     },
   },
+  leah: {
+    id: "leah",
+    frameSize: 34,
+    anims: ["idle", "walk", "blink"],
+    fps: { walk: 4, idle: 2 },
+  },
 };
 
 /** Era name (exactly as in the project front matter) -> pet id. */
 export const ERA_PETS: Record<string, string> = {
   "The Age of Man": "nesrin",
+  "The Common Era": "leah",
 };
 
 export function choosePet(
