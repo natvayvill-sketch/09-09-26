@@ -26,6 +26,13 @@ import PageLayout from '../layouts/PageLayout.astro';
     <button type="submit">Send</button>
   </form>
 
+  <section class="resume">
+    <h2>Resume</h2>
+    <a class="resume-link" href="/Lee-Vaylon-Resume.pdf" download="Lee-Vaylon-Resume.pdf">
+      Download my resume (PDF)
+    </a>
+  </section>
+
   <section class="socials">
     <h2>Find me elsewhere</h2>
     <ul>
@@ -56,6 +63,18 @@ import PageLayout from '../layouts/PageLayout.astro';
     border: none;
     padding: var(--space-2) var(--space-4);
     cursor: pointer;
+  }
+  .resume {
+    margin-bottom: var(--space-5);
+  }
+  .resume-link {
+    display: inline-block;
+    font-family: var(--font-heading);
+    font-size: 1.1rem;
+    background: var(--color-accent-red);
+    color: #fff;
+    text-decoration: none;
+    padding: var(--space-2) var(--space-4);
   }
   .honeypot {
     position: absolute;
