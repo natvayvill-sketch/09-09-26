@@ -4,10 +4,10 @@ era: "Reperations"
 type: ["unsorted"]
 date: 2024-02-20
 tags: ["2D Art"]
-cover: "/images/projects/Reperations/cover.png"
+cover: "/images/projects/Reperations/cover.webp"
 panels:
   - title: "First Light"
-    image: "/images/projects/Reperations/cover.png"
+    image: "/images/projects/Reperations/cover.webp"
     caption: "A scarred land remained."
 tools: ["2D Art"]
 links: []

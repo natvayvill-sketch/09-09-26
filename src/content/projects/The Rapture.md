@@ -4,10 +4,10 @@ era: "The Rapture"
 type: ["Map"]
 date: 2024-12-04
 tags: []
-cover: "/images/projects/the-rapture/cover.png"
+cover: "/images/projects/the-rapture/cover.webp"
 panels:
   - title: "Map"
-    image: "/images/projects/the-rapture/cover.png"
+    image: "/images/projects/the-rapture/cover.webp"
     caption: ""
 tools: ["Procreate"]
 links: []
