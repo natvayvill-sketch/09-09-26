@@ -57,3 +57,34 @@ export function groupByType(characters) {
   }
   return order.map((type) => ({ type, characters: map.get(type) }));
 }
+
+const DESCRIPTION_MAX = 160;
+
+/** Link-preview description for an era page: its first caption, shortened to fit. */
+export function eraDescription(era, characters) {
+  const caption = characters
+    .flatMap((character) => character.data.panels ?? [])
+    .map((panel) => panel.caption.trim())
+    .find((text) => text !== '');
+  if (!caption) return `${era}, a chapter of Lee Vaylon's art scrapbook.`;
+  if (caption.length <= DESCRIPTION_MAX) return caption;
+  const cut = caption.slice(0, DESCRIPTION_MAX - 1);
+  return `${cut.slice(0, cut.lastIndexOf(' ')).replace(/[\s,;:.-]+$/, '')}…`;
+}
+
+/**
+ * Character/feature art worth showing in a link preview: each panel image
+ * that isn't a map or the project's cover, skipping images that appear on
+ * more than one panel (those are placeholders, like the "?" art).
+ */
+export function showcaseImages(characters) {
+  const panels = characters.flatMap((character) =>
+    (character.data.panels ?? []).map((panel) => ({ ...panel, cover: character.data.cover })),
+  );
+  const uses = new Map();
+  for (const { image } of panels) uses.set(image, (uses.get(image) ?? 0) + 1);
+  const picks = panels
+    .filter((p) => p.image !== p.cover && p.title.trim().toLowerCase() !== 'map' && uses.get(p.image) === 1)
+    .map((p) => p.image);
+  return [...new Set(picks)];
+}

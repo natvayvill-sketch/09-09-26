@@ -11,7 +11,10 @@ const projects = visibleProjects(allProjects);
 const eras = [...new Set(projects.map((project) => project.data.era))];
 const tags = [...new Set(projects.flatMap((project) => project.data.tags))].sort();
 ---
-<PageLayout title="Work">
+<PageLayout
+  title="Work"
+  description="Every page of Lee Vaylon's art scrapbook, from The Age of Gods to The Common Era: maps, characters and concept art, filterable by era."
+>
   <h1>The Scrapbook</h1>
 
   <div class="filters" role="group" aria-label="Filter projects">

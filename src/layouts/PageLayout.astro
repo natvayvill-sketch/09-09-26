@@ -5,13 +5,43 @@ import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
 import Pet from '../components/Pet.astro';
 
-const { title, era } = Astro.props;
+const SITE_NAME = 'Lee Vaylon · Art & Games';
+const DEFAULT_DESCRIPTION =
+  "Lee Vaylon's art and game portfolio, kept like a scrapbook: concept art, characters, maps and worldbuilding, sorted by era.";
+
+const {
+  title,
+  era,
+  description = DEFAULT_DESCRIPTION,
+  /** Site path of this page's link-preview image (1200x630). */
+  image = '/og/default.jpg',
+  noindex = false,
+} = Astro.props;
+
+const pageTitle = `${title} · Lee Vaylon`;
+const pageUrl = new URL(Astro.url.pathname, Astro.site);
+const imageUrl = new URL(image, Astro.site);
 ---
 <html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{title} · Portfolio</title>
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={pageUrl} />
+    {noindex && <meta name="robots" content="noindex" />}
+
+    <!-- Link previews (Discord, LinkedIn, iMessage, Slack, X...) -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={SITE_NAME} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={pageUrl} />
+    <meta property="og:image" content={imageUrl} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Artwork by Lee Vaylon, pinned like polaroids in a scrapbook" />
+    <meta name="twitter:card" content="summary_large_image" />
     <ClientRouter />
   </head>
   <body>

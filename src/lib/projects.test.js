@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { isVisible, sortByDateDesc, visibleProjects, matchesFilter, slugifyEra, groupByEra, groupByType, isVintageEra } from './projects.js';
+import { isVisible, sortByDateDesc, visibleProjects, matchesFilter, slugifyEra, groupByEra, groupByType, isVintageEra, eraDescription, showcaseImages } from './projects.js';
 
 function project(overrides = {}) {
   return {
@@ -118,5 +118,48 @@ describe('isVintageEra', () => {
     expect(isVintageEra('Common Era')).toBe(false);
     expect(isVintageEra('Reperations')).toBe(false);
     expect(isVintageEra('Nebula Era')).toBe(false);
+  });
+});
+
+describe('eraDescription', () => {
+  const withCaptions = (...captions) =>
+    project({ panels: captions.map((caption, i) => ({ title: `P${i}`, image: '/x.webp', caption })) });
+
+  it('uses the first caption that has text', () => {
+    expect(eraDescription('Nebula Era', [withCaptions('', 'A scarred land remained.')])).toBe('A scarred land remained.');
+  });
+
+  it('shortens long captions at a word break, under 160 characters', () => {
+    const long = 'The rise of humanity began to push the magical to the outskirts of society. '.repeat(4).trim();
+    const text = eraDescription('Nebula Era', [withCaptions(long)]);
+    expect(text.length).toBeLessThanOrEqual(160);
+    expect(text.endsWith('…')).toBe(true);
+    expect(long.startsWith(text.slice(0, -1))).toBe(true);
+    expect(text.at(-2)).not.toBe(' ');
+  });
+
+  it('falls back to a plain line when no caption has text', () => {
+    expect(eraDescription('Nebula Era', [withCaptions('', '  ')])).toBe("Nebula Era, a chapter of Lee Vaylon's art scrapbook.");
+  });
+});
+
+describe('showcaseImages', () => {
+  const withPanels = (cover, ...panels) =>
+    project({ cover, panels: panels.map(([title, image]) => ({ title, image, caption: '' })) });
+
+  it('keeps character art and skips maps, covers and repeated placeholders', () => {
+    const gods = withPanels(
+      '/c.webp',
+      ['Map', '/map.webp'],
+      ['Xipetotl', '/x.webp'],
+      ['Love', '/q.webp'],
+      ['Wind', '/q.webp'],
+    );
+    const man = withPanels('/m.webp', ['Map', '/m.webp'], ['Esmeray', '/e.webp']);
+    expect(showcaseImages([gods, man])).toEqual(['/x.webp', '/e.webp']);
+  });
+
+  it('returns nothing for a map-only era', () => {
+    expect(showcaseImages([withPanels('/c.webp', ['Map', '/c.webp'])])).toEqual([]);
   });
 });

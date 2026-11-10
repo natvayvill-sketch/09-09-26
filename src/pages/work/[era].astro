@@ -2,7 +2,7 @@
 import { getCollection } from 'astro:content';
 import PageLayout from '../../layouts/PageLayout.astro';
 import Polaroid from '../../components/Polaroid.astro';
-import { visibleProjects, groupByEra, groupByType, slugifyEra, isVintageEra } from '../../lib/projects.js';
+import { visibleProjects, groupByEra, groupByType, slugifyEra, isVintageEra, eraDescription } from '../../lib/projects.js';
 
 const tilts = ['var(--tilt-a)', 'var(--tilt-b)', 'var(--tilt-c)', 'var(--tilt-d)'];
 
@@ -36,7 +36,12 @@ const tocEntries = characters.flatMap((character) =>
   })),
 );
 ---
-<PageLayout title={era} era={era}>
+<PageLayout
+  title={era}
+  era={era}
+  description={eraDescription(era, characters)}
+  image={`/og/${slugifyEra(era)}.jpg`}
+>
   <p><a href="/work/">← Back to scrapbook</a></p>
   <h1>{era}</h1>
 
