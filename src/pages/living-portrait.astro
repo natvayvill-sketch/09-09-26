@@ -96,15 +96,18 @@ import TapeStrip from "../components/TapeStrip.astro";
     padding: var(--space-3);
     text-align: center;
   }
-  .lp-panel {
+  /* The panel and buttons are created by src/tracker/ui.ts after the page
+     loads, so they need :global() or Astro's page scoping skips them. */
+  .lp-ui :global(.lp-panel) {
     background: rgba(255, 253, 248, 0.94);
     border: 1px solid var(--color-ink-soft);
     padding: var(--space-3) var(--space-4);
     max-width: 22rem;
   }
-  .lp-panel-title { font-family: var(--font-heading); font-size: 1.5rem; margin: 0 0 var(--space-2); }
-  .lp-btn {
+  .lp-ui :global(.lp-panel-title) { font-family: var(--font-heading); font-size: 1.5rem; margin: 0 0 var(--space-2); }
+  .lp-ui :global(.lp-btn) {
     font-family: var(--font-heading);
+    min-height: 2.75rem;
     font-size: 1.1rem;
     background: var(--color-accent-red);
     color: #fff;
@@ -113,13 +116,20 @@ import TapeStrip from "../components/TapeStrip.astro";
     margin-top: var(--space-2);
     cursor: pointer;
   }
-  .lp-btn-secondary {
+  .lp-ui :global(.lp-btn-secondary) {
     background: transparent;
     color: var(--color-ink);
     border: 1px solid var(--color-ink-soft);
     margin-left: var(--space-2);
   }
-  .lp-ui:has(.lp-btn:only-child) { align-items: flex-end; justify-content: flex-end; padding: var(--space-2); }
+  :global(.lp-ui:has(.lp-btn:only-child)) { align-items: flex-end; justify-content: flex-end; padding: var(--space-2); }
+  /* Phones: a bigger portrait and a more compact panel, so the panel fits inside it. */
+  @media (max-width: 40rem) {
+    .lp-stage { width: min(80vw, 30rem); }
+    .lp-ui { padding: var(--space-2); }
+    .lp-ui :global(.lp-panel) { padding: var(--space-2) var(--space-3); font-size: 0.85rem; line-height: 1.45; }
+    .lp-ui :global(.lp-panel-title) { font-size: 1.3rem; margin-bottom: var(--space-1); }
+  }
   .lp-caption {
     font-family: var(--font-heading);
     font-size: 1.2rem;

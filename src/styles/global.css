@@ -16,7 +16,7 @@ body {
   margin: 0;
   background-color: var(--color-paper);
   background-image:
-    linear-gradient(rgba(243, 234, 217, 0.5), rgba(243, 234, 217, 0.5)),
+    linear-gradient(rgba(243, 234, 217, 0.7), rgba(243, 234, 217, 0.7)),
     url('/images/projects/background/background-tile.jpg');
   background-repeat: repeat;
   color: var(--color-ink);
@@ -96,4 +96,11 @@ html {
     transform-origin: left center;
     filter: brightness(0.7);
   }
+}
+
+/* Links that sit on their own line ("← Back to scrapbook"): taller tap
+   area on phones without changing how they look. */
+.standalone-link {
+  display: inline-block;
+  padding-block: 0.5rem;
 }

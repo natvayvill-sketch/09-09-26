@@ -22,7 +22,7 @@ const featured = visibleProjects(allProjects).filter((project) => project.data.f
     <div class="cards">
       {featured.map((project) => <ProjectCard project={project} swapLabels />)}
     </div>
-    <p><a href="/work/">See the full scrapbook →</a></p>
+    <p><a class="standalone-link" href="/work/">See the full scrapbook →</a></p>
   </section>
 </PageLayout>
 

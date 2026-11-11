@@ -42,7 +42,7 @@ const tocEntries = characters.flatMap((character) =>
   description={eraDescription(era, characters)}
   image={`/og/${slugifyEra(era)}.jpg`}
 >
-  <p><a href="/work/">← Back to scrapbook</a></p>
+  <p><a class="standalone-link" href="/work/">← Back to scrapbook</a></p>
   <h1>{era}</h1>
 
   <nav class="toc" aria-label="Table of contents">

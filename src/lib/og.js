@@ -22,7 +22,7 @@ async function background() {
     .png()
     .toBuffer();
   const wash = await sharp({
-    create: { width: OG_WIDTH, height: OG_HEIGHT, channels: 4, background: { ...PAPER, alpha: 0.5 } },
+    create: { width: OG_WIDTH, height: OG_HEIGHT, channels: 4, background: { ...PAPER, alpha: 0.7 } },
   }).png().toBuffer();
   return sharp(tiled)
     .extract({ left: 0, top: 0, width: OG_WIDTH, height: OG_HEIGHT })
