@@ -1,7 +1,7 @@
 ---
 title: "No time like the present"
 era: "The Common Era"
-type: ["unsorted"]
+type: ["Characters"]
 date: 2024-02-20
 tags: ["2D Art"]
 cover: "/images/projects/the-common-era/cover.webp"
@@ -13,7 +13,7 @@ panels:
     image: "/images/projects/the-common-era/Leah.webp"
     caption: "First born, first discarded. One must wonder how things would have played out had she been the director instead of understudy."
 
-tools: ["2D Art"]
+tools: ["Procreate"]
 links: []
 featured: true
 draft: false

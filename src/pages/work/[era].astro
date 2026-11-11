@@ -61,7 +61,7 @@ const tocEntries = characters.flatMap((character) =>
         return (
           <article class="character">
             <h3>{title}</h3>
-            <p class="meta">{era} · {tags.join(', ')}</p>
+            <p class="meta">{[era, tags.join(', ')].filter(Boolean).join(' · ')}</p>
             <div class="panel-stack">
               {panels.map((panel, index) => (
                 <div id={`${character.id}-${index}`} tabindex="-1" class="panel">

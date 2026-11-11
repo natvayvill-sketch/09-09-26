@@ -8,27 +8,27 @@ cover: "/images/projects/celestial-drift/cover.webp"
 panels:
   - title: "Map"
     image: "/images/projects/celestial-drift/map.webp"
-    caption: "The purest point of the world was the Beginning"
+    caption: "The purest point of the world was the Beginning."
 
   - title: "Xipetotl"
     image: "/images/projects/celestial-drift/Xipetotl.webp"
-    caption: "Ashmani of Cycles, God of curses. Mother of the Dragonkind and the cursed Vashijkan"
+    caption: "Asmani of Cycles, God of Curses. Mother of the Dragonkind and the cursed Vashijkan"
 
   - title: "Love"
     image: "/images/projects/celestial-drift/Incomplete.webp"
-    caption: "Ashamni of the Lost and the Lonely. Master of Crossroads and Lover of the Forsaken"
+    caption: "Asmani of the Lost and the Lonely. Master of Crossroads and Lover of the Forsaken"
     
   - title: "Wind"
     image: "/images/projects/celestial-drift/Incomplete.webp"
-    caption: "Ashamni of the Whisphers and the Secrets Kept Close. Master of Knowledge and Teller of Stories"
+    caption: "Asmani of the Whispers and the Secrets Kept Close. Master of Knowledge and Teller of Stories"
 
   - title: "Earth"
     image: "/images/projects/celestial-drift/Incomplete.webp"
-    caption: "Ashamni of the Hearth and the Heart. keeper of Families and Observer of Erosion"
+    caption: "Asmani of the Hearth and the Heart. Keeper of Families and Observer of Erosion"
 
   - title: "Water"
     image: "/images/projects/celestial-drift/Incomplete.webp"
-    caption: "Ashamni of Prosperity. Wheel of Innovation and God of Medicine"
+    caption: "Asmani of Prosperity. Wheel of Innovation and God of Medicine"
 tools: ["Procreate"]
 links: []
 featured: true

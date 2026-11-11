@@ -10,7 +10,7 @@ const metaPrimary = swapLabels ? title : era;
 ---
 <a class="project-card" href={href} data-era={era} data-tags={tags.join(',')}>
   <Polaroid src={cover} alt={title} caption={caption} vintage={isVintageEra(era)} />
-  <p class="meta">{metaPrimary} · {tags.join(', ')}</p>
+  <p class="meta">{[metaPrimary, tags.join(', ')].filter(Boolean).join(' · ')}</p>
 </a>
 
 <style>
