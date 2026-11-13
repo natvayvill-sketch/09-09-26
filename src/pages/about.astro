@@ -1,0 +1,209 @@
+---
+import PageLayout from '../layouts/PageLayout.astro';
+import Polaroid from '../components/Polaroid.astro';
+import TapeStrip from '../components/TapeStrip.astro';
+
+// To add a photo or a sprite of yourself: put the image in public/images/
+// and set its path here, e.g. '/images/lee.webp'. Until then a hand-lettered
+// card with your initials sits in its place.
+const photo = '/images/projects/pfp.webp';
+---
+<PageLayout
+  title="About"
+  description="Lee Vaylon is an artist and game maker studying Creative Computation at SMU, and a freelance concept artist since 2023."
+>
+  <div class="spread">
+    <div class="portrait">
+      {photo ? (
+        <Polaroid src={photo} alt="Lee's painted profile picture: long pale curls with a red spider lily, seen from behind against deep blue" caption="that's me!" rotate="var(--tilt-c)" />
+      ) : (
+        <figure class="initials" aria-hidden="true">
+          <span>LV</span>
+          <figcaption>that's me!</figcaption>
+        </figure>
+      )}
+    </div>
+
+    <article class="journal">
+      <div class="journal-tape"><TapeStrip rotate="var(--tilt-b)" /></div>
+      <h1>About me</h1>
+      <p>
+        I'm Lee Vaylon, an artist and game maker. I'm studying Creative
+        Computation at SMU's Meadows School of the Arts, with a minor in Art,
+        which is a fancy way of saying I get to spend my days where drawing
+        and code overlap.
+      </p>
+      <p>
+        Since late 2023 I've worked as a freelance concept artist, designing
+        characters and places for other people's stories. In between, I build
+        my own: the chapters in this scrapbook, from The Age of Gods to The
+        Common Era, are pieces of a world I keep coming back to.
+      </p>
+      <p>
+        I also like making art that does something back. The{' '}
+        <a href="/living-portrait/">Living Portrait</a> copies your face as
+        you look at it, and the little pets wandering these pages are
+        sprites I drew frame by frame.
+      </p>
+    </article>
+  </div>
+
+  <section class="index-card" aria-labelledby="facts-heading">
+    <h2 id="facts-heading">Quick facts</h2>
+    <dl>
+      <div>
+        <dt>Studying</dt>
+        <dd>BA in Creative Computation, minor in Art. SMU Meadows School of the Arts, graduating May 2027</dd>
+      </div>
+      <div>
+        <dt>Working</dt>
+        <dd>Freelance concept artist, December 2023 to now</dd>
+      </div>
+      <div>
+        <dt>Shown at</dt>
+        <dd>Student Organized Art Collective Fan Art Exhibition, Doolin Gallery (2026); MHPS Art Gallery (2026)</dd>
+      </div>
+      <div>
+        <dt>Drawing in</dt>
+        <dd>Procreate</dd>
+      </div>
+    </dl>
+  </section>
+
+  <p class="next">
+    <a class="standalone-link" href="/work/">Browse the scrapbook →</a>
+    <a class="standalone-link" href="/contact/">Write me a letter →</a>
+  </p>
+</PageLayout>
+
+<style>
+  .spread {
+    display: grid;
+    grid-template-columns: 15rem 1fr;
+    gap: var(--space-5);
+    align-items: start;
+    max-width: 52rem;
+    margin: var(--space-4) auto var(--space-6);
+  }
+  .portrait {
+    display: flex;
+    justify-content: center;
+    padding-top: var(--space-4);
+  }
+
+  /* Same size on every screen, rather than as wide as the image allows. */
+  .portrait :global(.polaroid) {
+    width: 14rem;
+  }
+  .portrait :global(.polaroid img) {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  /* Stand-in for a photo: a polaroid with hand-lettered initials. */
+  .initials {
+    margin: 0;
+    width: 13rem;
+    padding: var(--space-2) var(--space-2) var(--space-3);
+    background: #f6efdf;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+    transform: rotate(var(--tilt-c));
+    text-align: center;
+  }
+  .initials span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    aspect-ratio: 1;
+    background: var(--color-accent-teal);
+    color: #fbf6ea;
+    font-family: var(--font-heading);
+    font-size: 5rem;
+  }
+  .initials figcaption {
+    font-family: var(--font-heading);
+    font-size: 1.3rem;
+    margin-top: var(--space-2);
+    color: var(--color-ink);
+  }
+
+  /* The bio, on a plain journal page with a soft dotted grid. */
+  .journal {
+    position: relative;
+    background-color: #fbf6ea;
+    background-image: radial-gradient(circle, #d8ccb4 1px, transparent 1.2px);
+    background-size: 1.25rem 1.25rem;
+    box-shadow: 0 2px 8px rgba(58, 47, 40, 0.18);
+    padding: var(--space-5);
+    transform: rotate(var(--tilt-a));
+  }
+  .journal-tape {
+    position: absolute;
+    top: -0.75rem;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  .journal h1 {
+    margin-top: 0;
+  }
+  .journal p {
+    line-height: 1.75;
+  }
+
+  /* Facts on a ruled index card with a red header line. */
+  .index-card {
+    max-width: 40rem;
+    margin: 0 auto var(--space-5);
+    padding: var(--space-4) var(--space-5);
+    background-color: #fdfaf2;
+    background-image: repeating-linear-gradient(to bottom, transparent 0, transparent calc(2rem - 1px), #c9d6de calc(2rem - 1px), #c9d6de 2rem);
+    background-position: 0 3.75rem;
+    box-shadow: 0 2px 8px rgba(58, 47, 40, 0.18);
+    transform: rotate(var(--tilt-d));
+  }
+  .index-card h2 {
+    margin: 0 0 var(--space-3);
+    padding-bottom: var(--space-1);
+    border-bottom: 2px solid #d98a80;
+  }
+  .index-card dl {
+    margin: 0;
+  }
+  .index-card dl > div {
+    display: grid;
+    grid-template-columns: 7rem 1fr;
+    gap: var(--space-3);
+    padding-block: var(--space-2);
+  }
+  .index-card dt {
+    font-family: var(--font-heading);
+    font-size: 1.3rem;
+    color: var(--color-accent-red);
+  }
+  .index-card dd {
+    margin: 0;
+  }
+
+  .next {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-5);
+  }
+
+  @media (max-width: 40rem) {
+    .spread {
+      grid-template-columns: 1fr;
+      gap: var(--space-4);
+    }
+    .journal,
+    .index-card {
+      padding: var(--space-4) var(--space-3);
+    }
+    .index-card dl > div {
+      grid-template-columns: 1fr;
+      gap: 0;
+    }
+  }
+</style>

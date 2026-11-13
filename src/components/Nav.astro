@@ -2,6 +2,7 @@
 const links = [
   { href: '/', label: 'Home' },
   { href: '/work/', label: 'Work' },
+  { href: '/about/', label: 'About' },
   { href: '/living-portrait/', label: 'Living Portrait' },
   { href: '/contact/', label: 'Contact' },
 ];
@@ -22,7 +23,8 @@ const current = Astro.url.pathname;
 <style>
   .nav ul {
     display: flex;
-    gap: var(--space-4);
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-4);
     list-style: none;
     padding: var(--space-3) var(--space-4);
     margin: 0;
@@ -34,6 +36,7 @@ const current = Astro.url.pathname;
     font-size: 1.25rem;
     text-decoration: none;
     color: var(--color-ink);
+    white-space: nowrap;
   }
   .nav a[aria-current="page"] {
     color: var(--color-accent-red);
