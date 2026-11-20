@@ -1,0 +1,270 @@
+---
+// THROWAWAY SPIKE — tries the 2D puppet from vtuber.psd with sliders and the
+// webcam. Not linked from the site and not meant to be committed.
+import PageLayout from '../layouts/PageLayout.astro';
+
+const sliders = [
+  { id: 'yaw', label: 'Turn', min: -35, max: 35, step: 1, unit: '°' },
+  { id: 'pitch', label: 'Nod', min: -30, max: 30, step: 1, unit: '°' },
+  { id: 'roll', label: 'Tilt', min: -25, max: 25, step: 1, unit: '°' },
+  { id: 'blink', label: 'Blink', min: 0, max: 1, step: 0.01, unit: '' },
+  { id: 'aa', label: 'Mouth open (aa)', min: 0, max: 1, step: 0.01, unit: '' },
+  { id: 'ou', label: 'Round mouth (ou)', min: 0, max: 1, step: 0.01, unit: '' },
+  { id: 'happy', label: 'Smile', min: 0, max: 1, step: 0.01, unit: '' },
+  { id: 'surprised', label: 'Surprised (brows)', min: 0, max: 1, step: 0.01, unit: '' },
+];
+---
+<PageLayout title="Portrait spike" noindex>
+  <h1>2D puppet test</h1>
+  <p class="note">Rough test of your vtuber.psd as a moving puppet. Blinking and the talking mouth are faked in code until you draw them.</p>
+
+  <div class="spike">
+    <div class="stage">
+      <canvas id="puppet" aria-label="2D puppet preview"></canvas>
+      <p id="status" class="status">Loading parts…</p>
+    </div>
+
+    <div class="controls">
+      <button type="button" id="camera">Use my webcam</button>
+      <label class="check"><input type="checkbox" id="autoblink" checked /> Blink on its own</label>
+      <label class="check"><input type="checkbox" id="unfinished" /> Show unfinished parts (sleeves, tassels, curl, earrings)</label>
+      <button type="button" id="wiggle">Play a demo</button>
+      {sliders.map((s) => (
+        <label class="slider">
+          <span>{s.label} <output id={`${s.id}-out`}>0{s.unit}</output></span>
+          <input type="range" id={s.id} min={s.min} max={s.max} step={s.step} value="0" data-unit={s.unit} />
+        </label>
+      ))}
+      <button type="button" id="reset">Reset sliders</button>
+    </div>
+  </div>
+  <video id="spike-video" playsinline muted hidden></video>
+</PageLayout>
+
+<script>
+  import { createPuppet } from '../spike/puppet2d';
+  import type { PoseUpdate } from '../tracker/types';
+
+  const DEG = Math.PI / 180;
+  let teardown: (() => void) | null = null;
+
+  async function setup() {
+    const canvas = document.getElementById('puppet');
+    if (!(canvas instanceof HTMLCanvasElement) || teardown) return;
+    const status = document.getElementById('status')!;
+    const video = document.getElementById('spike-video') as HTMLVideoElement;
+    const ids = ['yaw', 'pitch', 'roll', 'blink', 'aa', 'ou', 'happy', 'surprised'];
+    const inputs = Object.fromEntries(ids.map((id) => [id, document.getElementById(id) as HTMLInputElement]));
+    const val = (id: string) => Number(inputs[id]!.value);
+    // Preset poses for testing: ?yaw=20&aa=0.8 …
+    const params = new URLSearchParams(location.search);
+    for (const id of ids) if (params.has(id)) inputs[id]!.value = params.get(id)!;
+
+    const puppet = createPuppet();
+    puppet.mount(canvas);
+    const fit = () => {
+      const r = canvas.getBoundingClientRect();
+      puppet.resize(r.width, r.height);
+    };
+    fit();
+    window.addEventListener('resize', fit);
+    const still = params.has('still');
+    puppet.setAutoBlink(!still);
+    if (still) (document.getElementById('autoblink') as HTMLInputElement).checked = false;
+
+    let mode: 'sliders' | 'camera' | 'demo' = 'sliders';
+    let stream: MediaStream | null = null;
+    let tracker: { detect(v: HTMLVideoElement, t: number): any; close(): void } | null = null;
+    let mapping: any = null;
+    let mapState: any = null;
+    let demoT = 0;
+
+    function sliderPose(): PoseUpdate {
+      return {
+        neckEuler: { x: 0, y: 0, z: 0 },
+        headEuler: { x: val('pitch') * DEG, y: val('yaw') * DEG, z: val('roll') * DEG },
+        expressionWeights: { blink: val('blink'), aa: val('aa'), ou: val('ou'), happy: val('happy'), surprised: val('surprised') },
+      };
+    }
+
+    function demoPose(t: number): PoseUpdate {
+      const talk = Math.max(0, Math.sin(t * 9) * Math.sin(t * 2.3));
+      return {
+        neckEuler: { x: 0, y: 0, z: 0 },
+        headEuler: { x: Math.sin(t * 0.9) * 10 * DEG, y: Math.sin(t * 0.6) * 25 * DEG, z: Math.sin(t * 0.75 + 1) * 12 * DEG },
+        expressionWeights: { aa: talk * 0.8, happy: Math.max(0, Math.sin(t * 0.4)) * 0.8, surprised: Math.max(0, Math.sin(t * 0.3 + 2)) ** 4 },
+      };
+    }
+
+    for (const id of ids) {
+      const input = inputs[id]!;
+      const out = document.getElementById(`${id}-out`)!;
+      input.addEventListener('input', () => {
+        out.textContent = input.value + (input.dataset.unit ?? '');
+        if (mode === 'demo') mode = 'sliders';
+      });
+    }
+    document.getElementById('reset')!.addEventListener('click', () => {
+      for (const id of ids) {
+        inputs[id]!.value = '0';
+        document.getElementById(`${id}-out`)!.textContent = '0' + (inputs[id]!.dataset.unit ?? '');
+      }
+      if (mode === 'demo') mode = 'sliders';
+    });
+    document.getElementById('wiggle')!.addEventListener('click', () => {
+      if (mode !== 'camera') mode = mode === 'demo' ? 'sliders' : 'demo';
+    });
+    (document.getElementById('autoblink') as HTMLInputElement).addEventListener('change', (e) =>
+      puppet.setAutoBlink((e.target as HTMLInputElement).checked),
+    );
+    (document.getElementById('unfinished') as HTMLInputElement).addEventListener('change', (e) =>
+      puppet.setShowUnfinished((e.target as HTMLInputElement).checked),
+    );
+
+    const camButton = document.getElementById('camera') as HTMLButtonElement;
+    camButton.addEventListener('click', async () => {
+      if (mode === 'camera') {
+        stopCam();
+        return;
+      }
+      camButton.disabled = true;
+      status.textContent = 'Starting camera…';
+      status.hidden = false;
+      try {
+        const [{ requestCamera }, { createFaceTracker }, map] = await Promise.all([
+          import('../tracker/camera'),
+          import('../tracker/faceTracker'),
+          import('../tracker/mapping'),
+        ]);
+        const res = await requestCamera();
+        if (!res.ok) throw new Error(`camera ${res.reason}`);
+        stream = res.stream;
+        video.srcObject = stream;
+        await video.play();
+        status.textContent = 'Loading face tracking…';
+        tracker = await createFaceTracker({ wasmBase: '/tracker/wasm', modelUrl: '/tracker/face_landmarker.task', delegate: 'GPU' })
+          .catch(() => createFaceTracker({ wasmBase: '/tracker/wasm', modelUrl: '/tracker/face_landmarker.task', delegate: 'CPU' }));
+        mapping = map;
+        mapState = map.createMappingState();
+        mode = 'camera';
+        camButton.textContent = 'Stop webcam';
+        status.hidden = true;
+      } catch (err) {
+        status.textContent = `Couldn't start the webcam (${(err as Error).message}).`;
+        stopCam(false);
+      } finally {
+        camButton.disabled = false;
+      }
+    });
+
+    function stopCam(resetStatus = true) {
+      tracker?.close();
+      tracker = null;
+      if (stream) for (const tr of stream.getTracks()) tr.stop();
+      stream = null;
+      video.srcObject = null;
+      mode = 'sliders';
+      camButton.textContent = 'Use my webcam';
+      if (resetStatus) status.hidden = true;
+    }
+
+    try {
+      await puppet.load('/images/vtuber/parts');
+      status.hidden = true;
+    } catch (err) {
+      status.textContent = `Couldn't load the puppet: ${(err as Error).message}`;
+      return;
+    }
+
+    let raf = 0;
+    let last = performance.now();
+    const loop = (now: number) => {
+      const dt = Math.min(0.1, (now - last) / 1000);
+      last = now;
+      if (mode === 'camera' && tracker && video.readyState >= 2) {
+        const raw = tracker.detect(video, now);
+        const r = mapping.mapFaceToPose(raw, mapState);
+        mapState = r.state;
+        puppet.applyPose(r.pose);
+      } else if (mode === 'demo') {
+        demoT += dt;
+        puppet.applyPose(demoPose(demoT));
+      } else {
+        puppet.applyPose(sliderPose());
+      }
+      puppet.render(dt);
+      raf = requestAnimationFrame(loop);
+    };
+    raf = requestAnimationFrame(loop);
+
+    teardown = () => {
+      cancelAnimationFrame(raf);
+      stopCam();
+      window.removeEventListener('resize', fit);
+      puppet.dispose();
+      teardown = null;
+    };
+  }
+
+  document.addEventListener('astro:page-load', setup);
+  document.addEventListener('astro:before-swap', () => teardown?.());
+</script>
+
+<style>
+  .note {
+    font-family: var(--font-heading);
+    font-size: 1.25rem;
+    color: var(--color-accent-red);
+  }
+  .spike {
+    display: grid;
+    grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+    gap: var(--space-4);
+    align-items: start;
+  }
+  .stage {
+    position: relative;
+    background: #e9dcc3;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+    border: 0.6rem solid #f6efdf;
+  }
+  #puppet {
+    display: block;
+    width: 100%;
+    aspect-ratio: 1500 / 1770;
+  }
+  .status {
+    position: absolute;
+    inset: auto 0 1rem;
+    text-align: center;
+    margin: 0;
+  }
+  .controls {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+  .controls button {
+    font: inherit;
+    padding: var(--space-2) var(--space-3);
+    background: var(--color-paper-dark);
+    border: 1px solid var(--color-ink-soft);
+    cursor: pointer;
+  }
+  .check {
+    font-size: 0.9rem;
+  }
+  .slider {
+    display: flex;
+    flex-direction: column;
+    font-size: 0.9rem;
+  }
+  .slider input {
+    width: 100%;
+  }
+  @media (max-width: 40rem) {
+    .spike {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

@@ -17,3 +17,6 @@ public/images/projects/background/background.png
 
 # Full-size originals of art (the site uses smaller .webp copies in public/)
 originals/
+
+# Layered source art for the 2D puppet (45MB+). Only the exported parts/ are used.
+public/images/vtuber/*.psd

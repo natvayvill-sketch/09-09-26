@@ -1,0 +1,270 @@
+{
+ "width": 1500,
+ "height": 2000,
+ "parts": [
+  {
+   "name": "halo",
+   "x": 116,
+   "y": 332,
+   "w": 1268,
+   "h": 1268,
+   "unfinished": false
+  },
+  {
+   "name": "hair-back",
+   "x": 408,
+   "y": 737,
+   "w": 673,
+   "h": 696,
+   "unfinished": false
+  },
+  {
+   "name": "sleeve-back-r",
+   "x": 1010,
+   "y": 1368,
+   "w": 257,
+   "h": 632,
+   "unfinished": true
+  },
+  {
+   "name": "sleeve-back-l",
+   "x": 233,
+   "y": 1368,
+   "w": 257,
+   "h": 632,
+   "unfinished": true
+  },
+  {
+   "name": "sleeve-puff-r",
+   "x": 1014,
+   "y": 1419,
+   "w": 390,
+   "h": 581,
+   "unfinished": true
+  },
+  {
+   "name": "sleeve-puff-l",
+   "x": 98,
+   "y": 1417,
+   "w": 388,
+   "h": 583,
+   "unfinished": true
+  },
+  {
+   "name": "torso",
+   "x": 278,
+   "y": 998,
+   "w": 1102,
+   "h": 1002,
+   "unfinished": false
+  },
+  {
+   "name": "tassels",
+   "x": 666,
+   "y": 1760,
+   "w": 182,
+   "h": 127,
+   "unfinished": true
+  },
+  {
+   "name": "head",
+   "x": 533,
+   "y": 744,
+   "w": 432,
+   "h": 500,
+   "unfinished": false
+  },
+  {
+   "name": "eye-white-l",
+   "x": 608,
+   "y": 951,
+   "w": 101,
+   "h": 100,
+   "unfinished": false
+  },
+  {
+   "name": "eye-white-r",
+   "x": 791,
+   "y": 951,
+   "w": 101,
+   "h": 100,
+   "unfinished": false
+  },
+  {
+   "name": "iris-l",
+   "x": 629,
+   "y": 962,
+   "w": 68,
+   "h": 70,
+   "unfinished": false
+  },
+  {
+   "name": "iris-r",
+   "x": 803,
+   "y": 962,
+   "w": 68,
+   "h": 70,
+   "unfinished": false
+  },
+  {
+   "name": "highlight-l",
+   "x": 652,
+   "y": 990,
+   "w": 23,
+   "h": 41,
+   "unfinished": false
+  },
+  {
+   "name": "highlight-r",
+   "x": 824,
+   "y": 990,
+   "w": 23,
+   "h": 41,
+   "unfinished": false
+  },
+  {
+   "name": "eyelid-l",
+   "x": 593,
+   "y": 942,
+   "w": 136,
+   "h": 141,
+   "unfinished": false
+  },
+  {
+   "name": "eyelid-r",
+   "x": 770,
+   "y": 942,
+   "w": 136,
+   "h": 142,
+   "unfinished": false
+  },
+  {
+   "name": "mouth-inside",
+   "x": 694,
+   "y": 1132,
+   "w": 111,
+   "h": 58,
+   "unfinished": false
+  },
+  {
+   "name": "teeth-top",
+   "x": 696,
+   "y": 1134,
+   "w": 108,
+   "h": 35,
+   "unfinished": false
+  },
+  {
+   "name": "teeth-bottom",
+   "x": 708,
+   "y": 1168,
+   "w": 84,
+   "h": 20,
+   "unfinished": false
+  },
+  {
+   "name": "lip-lower",
+   "x": 688,
+   "y": 1151,
+   "w": 126,
+   "h": 65,
+   "unfinished": false
+  },
+  {
+   "name": "lip-upper",
+   "x": 690,
+   "y": 1105,
+   "w": 137,
+   "h": 62,
+   "unfinished": false
+  },
+  {
+   "name": "nose",
+   "x": 648,
+   "y": 954,
+   "w": 203,
+   "h": 189,
+   "unfinished": false
+  },
+  {
+   "name": "lash-lower-l",
+   "x": 596,
+   "y": 1002,
+   "w": 103,
+   "h": 68,
+   "unfinished": false
+  },
+  {
+   "name": "lash-lower-r",
+   "x": 800,
+   "y": 1002,
+   "w": 102,
+   "h": 67,
+   "unfinished": false
+  },
+  {
+   "name": "brow-l",
+   "x": 612,
+   "y": 942,
+   "w": 104,
+   "h": 44,
+   "unfinished": false
+  },
+  {
+   "name": "brow-r",
+   "x": 784,
+   "y": 942,
+   "w": 104,
+   "h": 44,
+   "unfinished": false
+  },
+  {
+   "name": "crown",
+   "x": 564,
+   "y": 750,
+   "w": 372,
+   "h": 474,
+   "unfinished": false
+  },
+  {
+   "name": "lash-upper-l",
+   "x": 576,
+   "y": 964,
+   "w": 130,
+   "h": 68,
+   "unfinished": false
+  },
+  {
+   "name": "lash-upper-r",
+   "x": 794,
+   "y": 964,
+   "w": 130,
+   "h": 68,
+   "unfinished": false
+  },
+  {
+   "name": "hair-curl",
+   "x": 558,
+   "y": 1178,
+   "w": 132,
+   "h": 297,
+   "unfinished": true
+  },
+  {
+   "name": "earrings",
+   "x": 537,
+   "y": 986,
+   "w": 427,
+   "h": 134,
+   "unfinished": true
+  },
+  {
+   "name": "hair-front",
+   "x": 413,
+   "y": 663,
+   "w": 662,
+   "h": 436,
+   "unfinished": false
+  }
+ ]
+}
